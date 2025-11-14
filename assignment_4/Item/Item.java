@@ -1,6 +1,6 @@
-package Item;
+package assignment_4.Item;
 
-public class Item {
+abstract public class Item {
     private String name;
     private int price;
     private int level;
@@ -9,6 +9,9 @@ public class Item {
         this.name = name;
         this.price = price;
         this.level = level;
+    }
+    public String getName() {
+        return name;
     }
 
 }

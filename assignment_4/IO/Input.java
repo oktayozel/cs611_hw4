@@ -1,3 +1,4 @@
+package IO;
 import java.util.Scanner;
 
 public class Input {
@@ -28,3 +29,4 @@ public class Input {
         }
         return input;
     }
+}
