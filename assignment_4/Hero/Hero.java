@@ -1,3 +1,7 @@
+package assignment_4.Hero;
+
+import assignment_4.Inventory.Inventory;
+
 public class Hero {
     private String name;
     private int level;
@@ -21,6 +25,43 @@ public class Hero {
         this.inventory = inventory;
     }
 
+    //getters and setters 
+    //getter for name
+    public String getName() {
+        return name;
+    }
+    // getter for level
+    public int getLevel() {
+        return level;
+    }
+    // getter for HP
+    public int getHP() {
+        return HP;
+    }
+    //getter for MP
+    public int getMP() {
+        return MP;
+    }
+    // getter for strength
+    public int getStrength() {
+        return strength;
+    }
+    // getter for dexterity
+    public int getDexterity() {
+        return dexterity;
+    }
+    // getter for agility
+    public int getAgility() {
+        return agility;
+    }
+    // getter for gold
+    public int getGold() {
+        return gold;
+    }
+    // getter for inventory
+    public Inventory getInventory() {
+        return inventory;
+    }
 
 
 }

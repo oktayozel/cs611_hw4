@@ -10,8 +10,15 @@ abstract public class Item {
         this.price = price;
         this.level = level;
     }
+    
     public String getName() {
         return name;
+    }
+    public int getPrice() {
+        return price;
+    }
+    public int getLevel() {
+        return level;   
     }
 
 }

@@ -1,9 +1,9 @@
 package assignment_4;
-import IO.Output;
+import assignment_4.Core.GameManager;
 public class Main {
     public static void main(String[] args) {
-        // Entry point of the application
-        Output.gameInitialization("Welcome to Legends: Monsters and Heroes");
+        GameManager gameManager = new GameManager();
+        gameManager.startGame();
     }
 }
 

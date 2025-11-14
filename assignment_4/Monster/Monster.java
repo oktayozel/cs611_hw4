@@ -1,4 +1,4 @@
-package Monster;
+package assignment_4.Monster;
 public class Monster {
     private String name;
     private int level;
@@ -14,5 +14,24 @@ public class Monster {
         this.baseDamage = baseDamage;
         this.defense = defense;
         this.dodge = dodge;
+    }
+    // getters for monster attributes
+    public String getName() {
+        return name;
+    }
+    public int getLevel() {
+        return level;
+    }
+    public int getHP() {
+        return HP;
+    }   
+    public int getBaseDamage() {
+        return baseDamage;
+    }
+    public int getDefense() {
+        return defense;
+    }
+    public double getDodge() {
+        return dodge;
     }
 }
