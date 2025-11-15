@@ -1,5 +1,7 @@
 package assignment_4.Core;
 
+import assignment_4.Market.Market; 
+
 public class Tile {
 
     public enum Type {
@@ -11,11 +13,13 @@ public class Tile {
     private final int row;
     private final int col;
     private final Type type;
+    private final Market market;  
 
     public Tile(int row, int col, Type type) {
         this.row = row;
         this.col = col;
         this.type = type;
+        this.market = (type == Type.MARKET) ? new Market() : null;
     }
 
     public int getRow() {
@@ -40,6 +44,12 @@ public class Tile {
 
     public boolean isCommon() {
         return type == Type.COMMON;
+    }
+    public Market getMarket() {
+        if (isMarket()) {
+            return market;
+        }
+        return null;
     }
 
 

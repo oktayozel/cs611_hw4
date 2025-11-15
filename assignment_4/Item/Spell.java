@@ -23,5 +23,7 @@ public class Spell extends Item{
     public String getSpellType() {
         return spellType;
     }
-    
+    public String toString() {
+        return String.format("%s (Price: %d, Level: %d, Spell Type: %s, Damage: %d, Mana Cost: %d)", getName(), getPrice(), getLevel(), spellType, damage, manaCost);
+    }
 }

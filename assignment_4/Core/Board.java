@@ -1,7 +1,6 @@
 package assignment_4.Core;
 
 import java.util.Random;
-
 public class Board {
 
     private final int size;

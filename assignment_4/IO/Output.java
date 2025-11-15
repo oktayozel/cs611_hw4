@@ -102,6 +102,26 @@ public class Output {
 
     }
 
+    public static void printMenu() {
+        System.out.println("\nControls:");
+        System.out.println("W/A/S/D - move");
+        System.out.println("I - show party info");
+        System.out.println("M - enter market (if on market tile)");
+        System.out.println("Q - quit game");
+        System.out.print("Your move: ");
+    }
+
+    public static void printMarketMenu() {
+        System.out.println("\nMarket Controls:");
+        System.out.println("W/S - Move");
+        System.out.println("B - Buy items");
+        System.out.println("S - Sell items");
+        System.out.println("E - Exit market");
+        System.out.println("Q - quit game");
+
+        System.out.print("Your choice: ");
+    }
+
 
     
 

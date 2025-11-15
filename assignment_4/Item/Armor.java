@@ -11,4 +11,8 @@ public class Armor extends Item {
     public int getDamageReduction() {
         return damageReduction;
     }
+    public String toString() {
+        return String.format("%s (Price: %d, Level: %d, Damage Reduction: %d)", getName(), getPrice(), getLevel(), damageReduction);
+
+    }
 }

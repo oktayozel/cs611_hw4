@@ -17,4 +17,7 @@ public class Weapon extends Item {
     public int getHands() {
         return hands;
     }
+    public String toString() {
+        return String.format("%s (Price: %d, Level: %d, Damage: %d, Hands: %d)", getName(), getPrice(), getLevel(), damage, hands);
+    }
 }

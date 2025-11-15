@@ -2,6 +2,7 @@ package assignment_4.Core;
 
 import java.util.Scanner;
 import IO.Output;
+import IO.Input;
 
 public class GameManager {
 
@@ -10,10 +11,8 @@ public class GameManager {
     private Board board;
     private Piece partyPiece;   
     private User user;
-    private Scanner scanner;
-
+    
     public GameManager() {
-        this.scanner = new Scanner(System.in);
         setupGame();
     }
 
@@ -21,7 +20,7 @@ public class GameManager {
         Output.gameInitialization();
         Output.someSpace();
         Output.print("Enter your name: ");
-        String name = scanner.nextLine();
+        String name = Input.getUsername();
         this.user = new User(name);
 
 
@@ -47,59 +46,27 @@ public class GameManager {
 
         boolean running = true;
         while (running) {
-            board.printBoard(partyPiece.getRow(), partyPiece.getCol());
-            printMenu();
 
-            String input = scanner.nextLine().trim().toUpperCase();
-            switch (input) {
-                case "W":
-                    if (partyPiece.moveUp(board)) {
-                        handleTileEvent();
-                    }
-                    break;
-                case "A":
-                    if (partyPiece.moveLeft(board)) {
-                        handleTileEvent();
-                    }
-                    break;
-                case "S":
-                    if (partyPiece.moveDown(board)) {
-                        handleTileEvent();
-                    }
-                    break;
-                case "D":
-                    if (partyPiece.moveRight(board)) {
-                        handleTileEvent();
-                    }
-                    break;
-                case "I":
-                    user.getParty().printPartyInfo();
-                    break;
-                case "M":
-                    tryEnterMarket();
-                    break;
-                case "Q":
-                    running = false;
-                    break;
-                default:
-                    System.out.println("Unknown command.");
+            if (user.isInMarket()) {
+                Output.printMarketMenu();
+                running = Input.getMarketInput(this);
             }
+            else{
+                board.printBoard(partyPiece.getRow(), partyPiece.getCol());
+                Output.printMenu();
 
+                running = Input.getInput(this);
+
+
+            }
         }
 
         System.out.println("Thanks for playing!");
     }
 
-    private void printMenu() {
-        System.out.println("\nControls:");
-        System.out.println("W/A/S/D - move");
-        System.out.println("I - show party info");
-        System.out.println("M - enter market (if on market tile)");
-        System.out.println("Q - quit");
-        System.out.print("Your move: ");
-    }
 
-    private void handleTileEvent() {
+
+    public void handleTileEvent() {
         Tile tile = board.getTile(partyPiece.getRow(), partyPiece.getCol());
         if (tile == null) return;
 
@@ -107,16 +74,25 @@ public class GameManager {
             
             System.out.println("Battle starts now!");
         }
-        // market tiles are handled by pressing 'M'
     }
 
-    private void tryEnterMarket() {
+    public void tryEnterMarket() {
         Tile tile = board.getTile(partyPiece.getRow(), partyPiece.getCol());
         if (tile != null && tile.isMarket()) {
 
-            System.out.println("Market implementation");
+            Output.displayMarket(tile.getMarket());
+            user.setInMarket(true);
         } else {
             System.out.println("You are not standing on a market tile.");
         }
+    }
+    public Board getBoard() {
+        return board;
+    }
+    public User getUser() {
+        return user;
+    }
+    public Piece getPartyPiece() {
+        return partyPiece;
     }
 }

@@ -18,4 +18,7 @@ public class Potion extends Item {
     public String getEffectType() {
         return effectType;
     }
+    public String toString() {
+        return String.format("%s (Price: %d, Level: %d, Effect Type: %s, Effect Amount: %d)", getName(), getPrice(), getLevel(), effectType, effectAmount);
+    }
 }
