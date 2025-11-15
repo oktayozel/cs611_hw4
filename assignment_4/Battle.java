@@ -17,7 +17,7 @@ public class Battle {
     }
 
     public void start() {
-        System.out.println("===== BATTLE STARTS! =====");
+        Output.
 
         while (!finished) {
 
@@ -78,15 +78,7 @@ public class Battle {
     }
 
     
-    private void printBattleOptions() {
-        System.out.println("Choose an action:");
-        System.out.println("A - Attack");
-        System.out.println("S - Cast Spell");
-        System.out.println("P - Use Potion");
-        System.out.println("E - Change Equipment");
-        System.out.println("I - Show Heroes/Monsters Info");
-        System.out.println("Q - Quit game");
-    }
+
 
     private void monstersTurn() {
         System.out.println("Monsters attack! (TODO: implement monsters' AI and damage)");
