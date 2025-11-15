@@ -1,28 +1,36 @@
 package assignment_4;
 
+
+import java.util.List;
 import IO.Input;
+import IO.Output;
 import Core.GameManager;
+import Core.Party;
+import Monster.Monster;
+import Hero.Hero;
 
 
 public class Battle {
 
-    private GameManager gm;
+    private Party party;
+    private List<Monster> monsters;
     private boolean finished;
     private boolean heroesWon;
 
     public Battle(GameManager gm) {
-        this.gm = gm;
         this.finished = false;
         this.heroesWon = false;
+        this.party = gm.getUser().getParty();
+        this.monsters = generateMonstersForBattle(party.size());
     }
 
     public void start() {
-        Output.
+        Output.printBattleMenu();
 
         while (!finished) {
 
             System.out.println("\n--- Heroes' Turn ---");
-            printBattleOptions();
+            Output.printBattleMenu();
 
             boolean keepPlaying = Input.getBattleInput(gm, this);
             if (!keepPlaying) {
@@ -78,8 +86,6 @@ public class Battle {
     }
 
     
-
-
     private void monstersTurn() {
         System.out.println("Monsters attack! (TODO: implement monsters' AI and damage)");
     }
@@ -103,4 +109,10 @@ public class Battle {
     public void endBattle() {
         this.finished = true;
     }
+    private void generateMonstersForBattle(int numberOfMonsters) {
+        
+    
+    
+    }
+
 }

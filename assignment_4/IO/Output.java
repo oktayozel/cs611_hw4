@@ -119,11 +119,14 @@ public class Output {
 
 
 
+
+
+
     }
 
 
 
-    private void printBattleMenu(){
+    public static void printBattleMenu(){
         System.out.println("Choose an action:");
         System.out.println("A - Attack");
         System.out.println("S - Cast Spell");
