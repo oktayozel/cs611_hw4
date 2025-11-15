@@ -5,11 +5,13 @@ public class User {
     private String name;
     private Party party;
     private boolean inMarket;
+    private boolean inBattle;
 
     public User(String name) {
         this.name = name;
         this.party = new Party();
         this.inMarket = false;
+        this.inBattle = false;
     }
 
     public String getName() {
@@ -24,5 +26,11 @@ public class User {
     public void setInMarket(boolean inMarket) {
         this.inMarket = inMarket;
     }
+    public boolean isInBattle() {
+        return inBattle;
+    }
+    public void setInBattle(boolean inBattle) {
+        this.inBattle = inBattle;
+    }   
 
 }

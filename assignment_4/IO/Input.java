@@ -128,6 +128,53 @@ public  class Input {
 
     }
 
+    
+    public static boolean getBattleInput(GameManager gm, Battle battle) {
+        boolean running = true;
+        String input;
+
+        while (true) {
+            input = scanner.nextLine().trim().toUpperCase();
+
+            if (!input.equals("A") &&  // Attack
+                !input.equals("S") &&  // Spell
+                !input.equals("P") &&  // Potion
+                !input.equals("E") &&  // Equip
+                !input.equals("I") &&  // Info
+                !input.equals("Q")) {  // Quit
+                System.out.println("Invalid input. Please try again.");
+            } else {
+                isGameExit(input); // Q will System.exit(0)
+                break;
+            }
+        }
+
+        if (input.equals("A")) {
+            battle.heroAttack();
+
+        } else if (input.equals("S")) {
+            battle.castSpell();
+
+        } else if (input.equals("P")) {
+            battle.usePotion();
+
+        } else if (input.equals("E")) {
+            battle.changeEquipment();
+
+        } else if (input.equals("I")) {
+            battle.printInfo();
+
+        } else if (input.equals("Q")) {
+            // If isGameExit() is kept with System.exit, this line is never reached,
+            // but we keep it for safety if you later change isGameExit
+            running = false;
+        }
+
+        return running;
+    }
+
+
+
 
 
 

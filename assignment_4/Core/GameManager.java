@@ -51,6 +51,10 @@ public class GameManager {
                 Output.printMarketMenu();
                 running = Input.getMarketInput(this);
             }
+            if( user.isInBattle()){
+                Battle battle = new Battle(this);
+                battle.start();
+            }
             else{
                 board.printBoard(partyPiece.getRow(), partyPiece.getCol());
                 Output.printMenu();
@@ -73,6 +77,7 @@ public class GameManager {
         if (tile.isCommon()) {
             
             System.out.println("Battle starts now!");
+            user.setInBattle(true);
         }
     }
 
