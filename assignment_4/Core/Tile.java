@@ -56,6 +56,7 @@ public class Tile {
         if(type == Type.COMMON){
             return ' ';
         }
-
+        
+        return ' ';
     }
 }

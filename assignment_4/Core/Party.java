@@ -29,22 +29,7 @@ public class Party {
         return heroes.size();
     }
 
-    public boolean allFainted() {
-        for (Hero h : heroes) {
-            if (!h.isFainted()) {
-                return false;
-            }
-        }
-        return true;
-    }
 
-    public void reviveFaintedAfterBattle() {
-        for (Hero h : heroes) {
-            if (h.isFainted()) {
-                h.reviveAfterBattle();
-            }
-        }
-    }
 
     public void printPartyInfo() {
         System.out.println("===== PARTY =====");

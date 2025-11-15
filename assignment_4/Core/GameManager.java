@@ -1,6 +1,7 @@
 package assignment_4.Core;
 
 import java.util.Scanner;
+import IO.Output;
 
 public class GameManager {
 
@@ -17,7 +18,9 @@ public class GameManager {
     }
 
     private void setupGame() {
-        System.out.print("Enter your name: ");
+        Output.gameInitialization();
+        Output.someSpace();
+        Output.print("Enter your name: ");
         String name = scanner.nextLine();
         this.user = new User(name);
 
