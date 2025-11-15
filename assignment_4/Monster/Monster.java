@@ -15,6 +15,7 @@ public class Monster {
         this.defense = defense;
         this.dodge = dodge;
     }
+    
     // getters for monster attributes
     public String getName() {
         return name;

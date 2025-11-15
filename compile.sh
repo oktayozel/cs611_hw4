@@ -6,7 +6,7 @@ javac -d out \
       assignment_4/Main.java \
       assignment_4/Battle.java \
       assignment_4/Inventory/*.java \
-      assignment_4/Market.java \
+      assignment_4/Market/*.java \
       assignment_4/Statistics.java \
       assignment_4/IO/*.java \
       assignment_4/Hero/*.java \
