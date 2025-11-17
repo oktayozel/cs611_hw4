@@ -3,6 +3,7 @@ package assignment_4.Core;
 import java.util.Scanner;
 import IO.Output;
 import IO.Input;
+import assignment_4.Battle;
 
 public class GameManager {
 

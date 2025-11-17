@@ -34,8 +34,14 @@ public class Party {
     public void printPartyInfo() {
         System.out.println("===== PARTY =====");
         for (Hero h : heroes) {
-            System.out.println(h); // make toString() nice in Hero
+            System.out.println(h); 
         }
         System.out.println("=================");
     }
+    
+ 
+
+
+    
+
 }

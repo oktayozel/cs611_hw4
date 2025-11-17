@@ -64,4 +64,13 @@ public class Hero {
     }
 
 
+    @Override
+    public String toString() {
+        return "Hero{" +
+                "Name='" + name + '\'' +
+                ", HP=" + HP +
+                '}';
+    }
+
+
 }

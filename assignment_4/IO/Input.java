@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 import assignment_4.Core.GameManager;
 import assignment_4.Core.Piece;
+import assignment_4.Battle;
 public  class Input {
     private static Scanner scanner = new Scanner(System.in);
 

@@ -4,6 +4,8 @@ import assignment_4.Monster.Monster;
 import assignment_4.Hero.Hero;
 import assignment_4.Item.Item;
 import assignment_4.Market.Market;
+import assignment_4.Battle;
+
 
 public class Output {
 
@@ -20,7 +22,7 @@ public class Output {
         }
     }
     public static void clearScreen(){
-        int cnt = 15;
+        int cnt = 100;
         while(cnt > 0){
             System.out.println();
             cnt--;
@@ -28,6 +30,7 @@ public class Output {
     }
 
     public static void gameInitialization() {
+        clearScreen();
         System.out.println("██╗     ███████╗ ██████╗ ███████╗███╗   ██╗██████╗ ███████╗                    ");
         System.out.println("██║     ██╔════╝██╔════╝ ██╔════╝████╗  ██║██╔══██╗██╔════╝██╗                 ");
         System.out.println("██║     █████╗  ██║  ███╗█████╗  ██╔██╗ ██║██║  ██║███████╗╚═╝                 ");
@@ -103,7 +106,8 @@ public class Output {
     }
 
     public static void displayBattle(Battle battle){
-        System.out.println("=============================================================================================================================");
+        clearScreen();
+        System.out.println("=====================================================================================================================================================");
         System.out.println(" ▄▄▄▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄            ▄▄▄▄▄▄▄▄▄▄▄      ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄        ▄  ▄▄▄▄▄▄▄▄▄▄▄ ");             
         System.out.println("▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌          ▐░░░░░░░░░░░▌    ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░░▌      ▐░▌▐░░░░░░░░░░░▌");             
         System.out.println("▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀█░█▀▀▀▀  ▀▀▀▀█░█▀▀▀▀ ▐░▌          ▐░█▀▀▀▀▀▀▀▀▀     ▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀▀▀ ▐░▌░▌     ▐░▌▐░█▀▀▀▀▀▀▀█░▌");             
@@ -115,7 +119,16 @@ public class Output {
         System.out.println("▐░█▄▄▄▄▄▄▄█░▌▐░▌       ▐░▌     ▐░▌          ▐░▌     ▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄▄▄     ▐░▌       ▐░▌▐░▌      ▐░▌ ▐░█▄▄▄▄▄▄▄▄▄ ▐░▌     ▐░▐░▌▐░▌       ▐░▌");             
         System.out.println("▐░░░░░░░░░░▌ ▐░▌       ▐░▌     ▐░▌          ▐░▌     ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌    ▐░▌       ▐░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌      ▐░░▌▐░▌       ▐░▌");             
         System.out.println(" ▀▀▀▀▀▀▀▀▀▀   ▀         ▀       ▀            ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀      ▀         ▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀        ▀▀  ▀         ▀ ");  
-        System.out.println("=============================================================================================================================");
+        System.out.println("=====================================================================================================================================================");
+
+        System.out.println("HEROES                                                                   X                                                                   MONSTERS");
+        System.out.println("=====================================================================================================================================================");
+        for( int i = 0 ; i < battle.getParty().getHeroes().size(); i++){
+            Hero hero = battle.getParty().getHeroes().get(i);
+            Monster monster = battle.getMonsters().get(i);
+            System.out.printf("%-50s X %-50s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
+        }
+
 
 
 
@@ -124,6 +137,14 @@ public class Output {
 
     }
 
+
+
+
+
+
+
+
+    // INPUT OPTIONS
 
 
     public static void printBattleMenu(){
@@ -135,9 +156,6 @@ public class Output {
         System.out.println("I - Show Heroes/Monsters Info");
         System.out.println("Q - Quit game");
     }
-
-
-
 
     public static void printMenu() {
         System.out.println("\nControls:");

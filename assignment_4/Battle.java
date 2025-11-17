@@ -4,10 +4,10 @@ package assignment_4;
 import java.util.List;
 import IO.Input;
 import IO.Output;
-import Core.GameManager;
-import Core.Party;
-import Monster.Monster;
-import Hero.Hero;
+import assignment_4.Core.GameManager;
+import assignment_4.Core.Party;
+import assignment_4.Monster.Monster;
+import assignment_4.Hero.Hero;
 
 
 public class Battle {
@@ -16,8 +16,10 @@ public class Battle {
     private List<Monster> monsters;
     private boolean finished;
     private boolean heroesWon;
+    private GameManager gm;
 
     public Battle(GameManager gm) {
+        this.gm = gm;
         this.finished = false;
         this.heroesWon = false;
         this.party = gm.getUser().getParty();
@@ -25,9 +27,9 @@ public class Battle {
     }
 
     public void start() {
-        Output.printBattleMenu();
-
+        
         while (!finished) {
+            Output.displayBattle(this);
 
             System.out.println("\n--- Heroes' Turn ---");
             Output.printBattleMenu();
@@ -109,10 +111,17 @@ public class Battle {
     public void endBattle() {
         this.finished = true;
     }
-    private void generateMonstersForBattle(int numberOfMonsters) {
+    private List<Monster> generateMonstersForBattle(int numberOfMonsters) {
         
-    
-    
+        // TODO: implement monster generation logic based on party level and size
+        return null; // placeholder
+    }
+    public Party getParty(){
+        return party;
+    }
+
+    public List<Monster> getMonsters(){
+        return monsters;
     }
 
 }
