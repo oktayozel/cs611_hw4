@@ -1,1 +1,1 @@
-java -cp out assignment_4.Main
+java -cp out src.Main

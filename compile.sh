@@ -3,15 +3,15 @@
 mkdir -p out
 
 javac -d out \
-      assignment_4/Main.java \
-      assignment_4/Battle.java \
-      assignment_4/Inventory/*.java \
-      assignment_4/Market/*.java \
-      assignment_4/Statistics.java \
-      assignment_4/IO/*.java \
-      assignment_4/Hero/*.java \
-      assignment_4/Monster/*.java \
-      assignment_4/Item/*.java \
-      assignment_4/Core/*.java
+      src/Main.java \
+      src/Battle.java \
+      src/Inventory/*.java \
+      src/Market/*.java \
+      src/Statistics.java \
+      src/IO/*.java \
+      src/Hero/*.java \
+      src/Monster/*.java \
+      src/Item/*.java \
+      src/Core/*.java
 
 echo "Compilation finished. "
