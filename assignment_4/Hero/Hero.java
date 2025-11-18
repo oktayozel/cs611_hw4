@@ -3,21 +3,22 @@ package assignment_4.Hero;
 import assignment_4.Inventory.Inventory;
 import assignment_4.Item.Weapon;
 import assignment_4.Item.Armor;
+import assignment_4.Item.Potion;
 
 public class Hero {
     private String name;
     private int level;
     private int HP; // health points
-    private int MP;// magic points
+    private int MP; // magic points
     private int strength;
-    private int dexterity; // 
+    private int dexterity;
     private int agility;
     private int gold;
-    private int experience;
+    private int experience; // XP
     protected String heroClass;
     private Inventory inventory;
-    private Weapon equippedWeapon; 
-    private Armor equippedArmor;  
+    private Weapon equippedWeapon;  // if the hero has equipped a weapon
+    private Armor equippedArmor;   // if the hero has equipped an armor
 
     public Hero(String name, int level, int HP, int MP, int strength, int dexterity, int agility, int gold, Inventory inventory) {
         this.name = name;
@@ -28,81 +29,138 @@ public class Hero {
         this.dexterity = dexterity;
         this.agility = agility;
         this.gold = gold;
-        this.inventory = inventory;
         this.experience = 0;
+        this.inventory = inventory;
         this.equippedWeapon = null;
         this.equippedArmor = null;
     }
 
-    //getters and setters 
-    //getter for name
-    public String getName() {
-        return name;
-    }
-    // getter for level
-    public int getLevel() {
-        return level;
-    }
-    // getter for HP
-    public int getHP() {
-        return HP;
-    }
-    //getter for MP
-    public int getMP() {
-        return MP;
-    }
-    // getter for strength
-    public int getStrength() {
-        return strength;
-    }
-    // getter for dexterity
-    public int getDexterity() {
-        return dexterity;
-    }
-    // getter for agility
-    public int getAgility() {
-        return agility;
-    }
-    // getter for gold
-    public int getGold() {
-        return gold;
-    }
-    public int getExperience() {
-        return experience;
-    }
-    // getter for inventory
-    public Inventory getInventory() {
-        return inventory;
-    }
 
-    public Weapon getEquippedWeapon() { return equippedWeapon; }
-    public Armor getEquippedArmor() { return equippedArmor; }
-    public void setEquippedWeapon(Weapon w) { this.equippedWeapon = w; }
-    public void setEquippedArmor(Armor a) { this.equippedArmor = a; }
+
+
+
+    // Gold helpers
+    public void addGold(int amount) { if (amount > 0) this.gold += amount; }
+    public boolean spendGold(int amount) {
+        if (amount <= 0) return true;
+        if (amount > gold) return false;
+        gold -= amount; return true;
+    }
+    public void setGold(int gold) { this.gold = Math.max(0, gold); }
+
+    // Experience helpers
     public void addExperience(int xp) { if (xp > 0) this.experience += xp; }
     public void setExperience(int xp) { this.experience = Math.max(0, xp); }
 
-    // Add gold to hero (e.g. from selling or battle rewards)
-    public void addGold(int amount) {
-        if (amount <= 0) return;
-        this.gold += amount;
+    // ===== Combat helpers =====
+    public double getDodgeChance() {
+        double chance = agility * 0.002; // spec: agility * 0.002
+        if (chance < 0) chance = 0;
+        if (chance > 0.6) chance = 0.6; // optional safety cap
+        return chance;
     }
 
-    // Attempt to spend gold; return true if successful
-    public boolean spendGold(int amount) {
-        if (amount <= 0) return true; // spending 0 succeeds trivially
-        if (amount > gold) return false;
-        gold -= amount;
-        return true;
+    public int computeAttackDamage() {
+        int weaponDamage = (equippedWeapon != null ? equippedWeapon.getDamage() : 0);
+        double raw = (strength + weaponDamage) * 0.05; // spec
+        return Math.max(1, (int)Math.round(raw));
     }
 
-    // Convenience: set gold directly (use cautiously)
-    public void setGold(int gold) {
-        this.gold = Math.max(0, gold);
+    public int getArmorReduction() {
+        return (equippedArmor != null ? equippedArmor.getDamageReduction() : 0);
     }
 
-    public String getHeroClass() {
-        return heroClass;
+    public void takeDamage(int amount) {
+        int dmg = Math.max(0, amount - getArmorReduction());
+        HP -= dmg;
+        if (HP < 0) HP = 0;
+    }
+
+    public boolean isFainted() { return HP <= 0; }
+
+    public void healHP(int amount) { if (amount > 0) HP += amount; }
+    public boolean spendMP(int amount) {
+        if (amount < 0) return false;
+        if (MP < amount) return false;
+        MP -= amount; return true;
+    }
+    public void restoreMP(int amount) { if (amount > 0) MP += amount; }
+
+    public void regenAfterRound() {
+        if (!isFainted()) {
+            HP = (int)Math.round(HP * 1.1);
+            MP = (int)Math.round(MP * 1.1);
+        }
+    }
+
+    public void reviveHalf() {
+        if (isFainted()) {
+            int baseHP = Math.max(1, level * 100);
+            HP = Math.max(1, baseHP / 2);
+            MP = Math.max(1, MP / 2);
+        }
+    }
+
+    public void applyPotion(Potion p) {
+        if (p == null) return;
+        String type = p.getEffectType();
+        int amount = p.getEffectAmount();
+        if (type == null) return;
+        switch (type.toUpperCase()) {
+            case "HP": healHP(amount); break;
+            case "MP": restoreMP(amount); break;
+            case "STRENGTH": strength += amount; break;
+            case "DEXTERITY": dexterity += amount; break;
+            case "AGILITY": agility += amount; break;
+            case "DEFENSE": /* extend later if needed */ break;
+            default: break;
+        }
+    }
+    // Basic getters
+    public String getName(){ 
+        return name; 
+    }
+    public int getLevel() { 
+        return level; 
+    }
+    public int getHP() { 
+        return HP; 
+    }
+    public int getMP() { 
+        return MP; 
+    }
+    public int getStrength() { 
+        return strength; 
+    }
+    public int getDexterity() { 
+        return dexterity; 
+    }
+    public int getAgility() { 
+        return agility; 
+    }
+    public int getGold() { 
+        return gold; 
+    }
+    public int getExperience() { 
+        return experience; 
+    }
+    public Inventory getInventory() { 
+        return inventory; 
+    }
+    public String getHeroClass() { 
+        return heroClass; 
+    }
+    public Weapon getEquippedWeapon() { 
+        return equippedWeapon; 
+    }
+    public Armor getEquippedArmor() { 
+        return equippedArmor; 
+    }
+    public void setEquippedWeapon(Weapon weapon) { 
+        this.equippedWeapon = weapon; 
+    }
+    public void setEquippedArmor(Armor armor) { 
+        this.equippedArmor = armor; 
     }
 
     @Override
@@ -116,6 +174,5 @@ public class Hero {
                 ", Gold=" + gold +
                 '}';
     }
-
 
 }

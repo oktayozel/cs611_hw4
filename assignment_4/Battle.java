@@ -123,6 +123,7 @@ public class Battle {
     private List<Monster> generateMonstersForBattle(int numberOfMonsters, int averagePartyLevel) {
         return MonsterSpawner.generateRandomMonsters(numberOfMonsters, averagePartyLevel);
     }
+    
     public Party getParty(){
         return party;
     }

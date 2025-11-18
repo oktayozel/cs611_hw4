@@ -15,7 +15,6 @@ public  class Input {
     public Input() {
     }
 
-
     public static void isGameExit(String input){
         if (input.equals("Q")) {
             System.out.println("Exiting the game...");
@@ -51,13 +50,9 @@ public  class Input {
     }
 
     public static int getHeroName(int heroIndex){
-        
         System.out.print("Select your "+ heroIndex + " hero ");
         System.out.print("(1: Warrior, 2: Sorcerer, 3: Paladin): ");
-        String input = scanner.nextLine().trim();
-        isGameExit(input);
-        int choice = Integer.parseInt(input);
-        return choice;
+        return readInt(1, 3);
     }
 
     public static boolean getInput(GameManager gm) {
@@ -155,11 +150,7 @@ public  class Input {
             System.out.println("(" + (i + 1) + ") " + h.getName() + " [Level: " + h.getLevel() + ", Gold: " + h.getGold() + "]");
         }
         System.out.print("Hero number: ");
-        int heroIdx = readIntSafe();
-        if (heroIdx < 1 || heroIdx > user.getParty().getHeroes().size()) {
-            System.out.println("Invalid hero selection.");
-            return;
-        }
+        int heroIdx = readInt(1, user.getParty().getHeroes().size());
 
 
         Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
@@ -172,11 +163,7 @@ public  class Input {
             return;
         }
         System.out.print("Enter item index to buy: ");
-        int itemIdx = readIntSafe();
-        if (itemIdx < 1 || itemIdx > primaryCount + secondCount) {
-            System.out.println("Invalid item index.");
-            return;
-        }
+        int itemIdx = readInt(1, primaryCount + secondCount);
 
 
         Item selected;
@@ -199,11 +186,7 @@ public  class Input {
             System.out.println("(" + (i + 1) + ") " + h.getName() + " [Gold: " + h.getGold() + "]");
         }
         System.out.print("Hero number: ");
-        int heroIdx = readIntSafe();
-        if (heroIdx < 1 || heroIdx > user.getParty().getHeroes().size()) {
-            System.out.println("Invalid hero selection.");
-            return;
-        }
+        int heroIdx = readInt(1, user.getParty().getHeroes().size());
         Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
         if (hero.getInventory().getEntries().isEmpty()) {
             System.out.println("Inventory empty.");
@@ -215,21 +198,25 @@ public  class Input {
             System.out.println("(" + (i + 1) + ") " + entry.getItem().getName() + " x" + entry.getQuantity() + " (Price: " + entry.getItem().getPrice() + ")");
         }
         System.out.print("Item number: ");
-        int itemIdx = readIntSafe();
-        if (itemIdx < 1 || itemIdx > hero.getInventory().getEntries().size()) {
-            System.out.println("Invalid item selection.");
-            return;
-        }
+        int itemIdx = readInt(1, hero.getInventory().getEntries().size());
         InventoryEntry entry = hero.getInventory().getEntries().get(itemIdx - 1);
         market.sellItem(hero, entry.getItem().getName());
     }
 
-    private static int readIntSafe() {
-        String raw = scanner.nextLine().trim();
-        try {
-            return Integer.parseInt(raw);
-        } catch (NumberFormatException e) {
-            return -1;
+    public static int readInt(int min, int max) {
+        while (true) {
+            String raw = scanner.nextLine().trim().toUpperCase();
+            isGameExit(raw);
+            try {
+                int val = Integer.parseInt(raw);
+                if (val < min || val > max) {
+                    System.out.print("Please enter a number between " + min + " and " + max + ": ");
+                    continue;
+                }
+                return val;
+            } catch (NumberFormatException e) {
+                System.out.print("Invalid number. Please enter a number between " + min + " and " + max + ": ");
+            }
         }
     }
 
