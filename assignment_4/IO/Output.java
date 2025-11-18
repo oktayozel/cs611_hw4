@@ -5,9 +5,86 @@ import assignment_4.Hero.Hero;
 import assignment_4.Item.Item;
 import assignment_4.Market.Market;
 import assignment_4.Battle;
+import assignment_4.Core.User;
+
+import java.util.Arrays;
+import java.util.List;
+
+
+
 
 
 public class Output {
+    static List<String> paladingArt = Arrays.asList(
+    "                       ,` -.)",
+    "                      ( _/-\\-._",
+    "                     /,|`--._,-^|            ,",
+    "                     \\_| |`-._/||          ,'|",
+    "                       |  `-, / |         /  /",
+    "                       |     || |        /  /",
+    "                        `r-._||/   __   /  /",
+    "                    __,-<_     )`-/  `./  /",
+    "                   '  \\   `---'   \\   /  /",
+    "                       |           |./  /",
+    "                       /           //  /",
+    "                   \\_/' \\         |/  /",
+    "                    |    |   _,^-'/  /",
+    "                    |    , ``  (\\/  /_",
+    "                     \\,.->._    \\\\X-=/^",
+    "                     (  /   `-._//^`",
+    "                      `Y-.____(__}",
+    "                       |     {__)",
+    "                             ("
+    );
+
+
+
+    static List<String> sorcererArt = Arrays.asList(
+    "                                       ____ ",
+    "                                     .'* *.'",
+    "                                  __/_*_*(_",
+    "                                 / _______ \\",
+    "                                _\\_)/___\\(_/_ ",
+    "                               / _((\\- -/))_ \\",
+    "                               \\ \\())(-)(()/ /",
+    "                                ' \\(((()))/ '",
+    "                               / ' \\)).))/ ' \\",
+    "                              / _ \\ - | - /_  \\",
+    "                             (   ( .;''';. .'  )",
+    "                             _\"__ /    )\\ __\"/_",
+    "                               \\/  \\   ' /  \\/",
+    "                                .'  '...' ' )",
+    "                                 / /  |  \\ \\",
+    "                                / .   .   . \\",
+    "                               /   .     .   \\",
+    "                              /   /   |   \\   \\",
+    "                            .'   /    b    '.  '.",
+    "                        _.-'    /     Bb     '-. '-._ ",
+    "                    _.-'       |      BBb       '-.  '-. ",
+    "                   (___________\\____.dBBBb.________)____)");
+
+
+    static List<String> warriorArt = Arrays.asList(
+    "                             {}",
+    "                            .--.",
+    "                           /.--.\\",
+    "                           |====|",
+    "                           |`::`|",
+    "                       .-;`\\..../`;_.-^-._",
+    "                      /  |...::..|`   :   `|",
+    "                     |   /'''::''|   .:.   |",
+    "                     ;--'\\   ::  |..:::::..|",
+    "                     <__> >._::_.| ':::::' |",
+    "                     |  |/   ^^  |   ':'   |",
+    "                     \\::/|       \\    :    /",
+    "                     |||\\|        \\   :   /",
+    "                     ''' |___/\\___|`-.:.-`",
+    "                          \\_ || _/    `",
+    "                          <_ >< _>",
+    "                          |  ||  |",
+    "                          |  ||  |",
+    "                         _\\.:||:./_",
+    "                        /____/\\____\\");
 
 
     public Output() {
@@ -29,6 +106,16 @@ public class Output {
         }
     }
 
+    public static void boardBanner(){
+        System.out.println("██╗     ███████╗ ██████╗ ███████╗███╗   ██╗██████╗ ███████╗       ███╗   ███╗      ██╗  ██╗        ");
+        System.out.println("██║     ██╔════╝██╔════╝ ██╔════╝████╗  ██║██╔══██╗██╔════╝██╗    ████╗ ████║      ██║  ██║        ");
+        System.out.println("██║     █████╗  ██║  ███╗█████╗  ██╔██╗ ██║██║  ██║███████╗╚═╝    ██╔████╔██║      ███████║        ");
+        System.out.println("██║     ██╔══╝  ██║   ██║██╔══╝  ██║╚██╗██║██║  ██║╚════██║██╗    ██║╚██╔╝██║ and  ██╔══██║        ");
+        System.out.println("███████╗███████╗╚██████╔╝███████╗██║ ╚████║██████╔╝███████║╚═╝    ██║ ╚═╝ ██║      ██║  ██║        ");
+        System.out.println("╚══════╝╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝       ╚═╝     ╚═╝      ╚═╝  ╚═╝        ");
+        someSpace();
+
+    }
     public static void gameInitialization() {
         clearScreen();
         System.out.println("██╗     ███████╗ ██████╗ ███████╗███╗   ██╗██████╗ ███████╗                    ");
@@ -59,9 +146,9 @@ public class Output {
 
 
 
-    public static void animateString(String[] animationFrames) {
+    public static void animateString(List<String> animationFrames) {
         for (String frame : animationFrames) {
-            System.out.print("\r" + frame);
+            System.out.print("\n" + frame);
             try {
                 Thread.sleep(300); 
             } catch (InterruptedException e) {
@@ -95,13 +182,30 @@ public class Output {
     }
 
     public static void displayMarket(Market market) {
-        System.out.println("========== MARKET ==========");
-        System.out.println("Welcome to the Market! Here you can buy and sell items to enhance your heroes.");
-        System.out.println("=============================");
+        clearScreen();
+        System.out.println("+-+-+-+-+-+-+         +-+-+-+-+-+-+        +-+-+-+-+-+-+        +-+-+-+-+-+-+       +-+-+-+-+-+-+");
+        System.out.println("|M|a|r|k|e|t|         |M|a|r|k|e|t|        |M|a|r|k|e|t|        |M|a|r|k|e|t|       |M|a|r|k|e|t|");
+        System.out.println("+-+-+-+-+-+-+         +-+-+-+-+-+-+        +-+-+-+-+-+-+        +-+-+-+-+-+-+       +-+-+-+-+-+-+");
+      
 
+
+        System.out.println("=====================================================================================================");
+        System.out.println("Welcome to the Market! Here you can buy and sell items to enhance your heroes.");
+        System.out.println("=====================================================================================================");
+        int idx = 1;
+        System.out.println("-- Primary Stock --");
         for (Item item : market.getItems()) {
-            System.out.println(item);
+            System.out.println("[" + idx + "] " + item);
+            idx++;
         }
+        if (!market.getSecondHandItems().isEmpty()) {
+            System.out.println("-- Second-Hand Stock --");
+            for (Item item : market.getSecondHandItems()) {
+                System.out.println("[" + idx + "] " + item + " (resale)");
+                idx++;
+            }
+        }
+        System.out.println("Total items listed: " + (idx - 1));
 
     }
 
@@ -121,7 +225,7 @@ public class Output {
         System.out.println(" ▀▀▀▀▀▀▀▀▀▀   ▀         ▀       ▀            ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀      ▀         ▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀        ▀▀  ▀         ▀ ");  
         System.out.println("=====================================================================================================================================================");
 
-        System.out.println("HEROES                                                                   X                                                                   MONSTERS");
+        System.out.println("HEROES                                                                Round {" + battle.getRound() + "}                                                                   MONSTERS");
         System.out.println("=====================================================================================================================================================");
         for( int i = 0 ; i < battle.getParty().getHeroes().size(); i++){
             Hero hero = battle.getParty().getHeroes().get(i);
@@ -138,9 +242,40 @@ public class Output {
     }
 
 
+    public static void displaySecondWelcomeMessage(User user){
+        System.out.println("Welcome to Legends: Monsters and Heroes, " + user.getName() + "!");
+        System.out.println("Prepare yourself for new adventures and challenges ahead!");
+        sleep(500);
+        System.out.println("Your game will start shotly with following heroes");
+        for( int i = 0 ; i < user.getParty().getHeroes().size(); i++){
+            sleep(500);
+            Hero hero = user.getParty().getHeroes().get(i);
+            if(hero.getHeroClass().equals("Paladin")) {
+                animateString(paladingArt);
+            } else if (hero.getHeroClass().equals("Sorcerer")) {
+                animateString(sorcererArt);
+            } else if (hero.getHeroClass().equals("Warrior")) {
+                animateString(warriorArt);
+            }
+            
+            System.out.println("\n\n                             Hero " + (i + 1) + ": " + hero.getName());
+            System.out.println("\n\n\n\n\n\n");
+        }
+        System.out.println("I beg mercy to you and the heroes, cause monsters won't show any!");
+        sleep(5000);
+    }
 
 
 
+
+
+    public static void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
 
 
@@ -168,9 +303,8 @@ public class Output {
 
     public static void printMarketMenu() {
         System.out.println("\nMarket Controls:");
-        System.out.println("W/S - Move");
-        System.out.println("B - Buy items");
-        System.out.println("S - Sell items");
+        System.out.println("B - Buy item");
+        System.out.println("S - Sell item");
         System.out.println("E - Exit market");
         System.out.println("Q - quit game");
 

@@ -11,6 +11,7 @@ public class Hero {
     private int dexterity; // 
     private int agility;
     private int gold;
+    protected String heroClass;
     private Inventory inventory;
 
     public Hero(String name, int level, int HP, int MP, int strength, int dexterity, int agility, int gold, Inventory inventory) {
@@ -63,12 +64,37 @@ public class Hero {
         return inventory;
     }
 
+    // Add gold to hero (e.g. from selling or battle rewards)
+    public void addGold(int amount) {
+        if (amount <= 0) return;
+        this.gold += amount;
+    }
+
+    // Attempt to spend gold; return true if successful
+    public boolean spendGold(int amount) {
+        if (amount <= 0) return true; // spending 0 succeeds trivially
+        if (amount > gold) return false;
+        gold -= amount;
+        return true;
+    }
+
+    // Convenience: set gold directly (use cautiously)
+    public void setGold(int gold) {
+        this.gold = Math.max(0, gold);
+    }
+
+    public String getHeroClass() {
+        return heroClass;
+    }
 
     @Override
     public String toString() {
         return "Hero{" +
                 "Name='" + name + '\'' +
+                ", Level=" + level +
                 ", HP=" + HP +
+                ", MP=" + MP +
+                ", Gold=" + gold +
                 '}';
     }
 

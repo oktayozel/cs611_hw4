@@ -4,6 +4,7 @@ package assignment_4;
 import java.util.List;
 import IO.Input;
 import IO.Output;
+import Monster.MonsterSpawner;
 import assignment_4.Core.GameManager;
 import assignment_4.Core.Party;
 import assignment_4.Monster.Monster;
@@ -17,13 +18,15 @@ public class Battle {
     private boolean finished;
     private boolean heroesWon;
     private GameManager gm;
+    private int round;
 
     public Battle(GameManager gm) {
         this.gm = gm;
         this.finished = false;
         this.heroesWon = false;
+        this.round = 1;
         this.party = gm.getUser().getParty();
-        this.monsters = generateMonstersForBattle(party.size());
+        this.monsters = generateMonstersForBattle(party.size(),party.getAverageLevel());
     }
 
     public void start() {
@@ -111,10 +114,8 @@ public class Battle {
     public void endBattle() {
         this.finished = true;
     }
-    private List<Monster> generateMonstersForBattle(int numberOfMonsters) {
-        
-        // TODO: implement monster generation logic based on party level and size
-        return null; // placeholder
+    private List<Monster> generateMonstersForBattle(int numberOfMonsters, int averagePartyLevel) {
+        return MonsterSpawner.generateRandomMonsters(numberOfMonsters, averagePartyLevel);
     }
     public Party getParty(){
         return party;
@@ -122,6 +123,12 @@ public class Battle {
 
     public List<Monster> getMonsters(){
         return monsters;
+    }
+    public int getRound(){
+        return round;
+    }
+    public void incrementRound(){
+        round++;
     }
 
 }

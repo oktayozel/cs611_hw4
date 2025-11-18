@@ -1,6 +1,8 @@
 package assignment_4.Core;
 
 import java.util.Random;
+
+import IO.Output;
 public class Board {
 
     private final int size;
@@ -45,6 +47,8 @@ public class Board {
     }
 
     public void printBoard(int partyRow, int partyCol) {
+        Output.clearScreen();
+        Output.boardBanner();
         for (int r = 0; r < size; r++) {
             for (int c = 0; c < size; c++) {
                 System.out.print("+---");

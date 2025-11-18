@@ -4,6 +4,11 @@ import java.util.Scanner;
 import assignment_4.Core.GameManager;
 import assignment_4.Core.Piece;
 import assignment_4.Battle;
+import assignment_4.Core.User;
+import assignment_4.Market.Market;
+import assignment_4.Hero.Hero;
+import assignment_4.Inventory.InventoryEntry;
+import assignment_4.Item.Item;
 public  class Input {
     private static Scanner scanner = new Scanner(System.in);
 
@@ -23,6 +28,38 @@ public  class Input {
         isGameExit(name);
         return name;
     }
+
+    public static int getPartySize(){
+        int size = 0;
+        String input;
+        while(true){
+            System.out.print("Enter the hero count (1-3): ");
+            input = scanner.nextLine().trim();
+            isGameExit(input);
+            try {
+                size = Integer.parseInt(input);
+                if (size >= 1 && size <= 3) {
+                    break;
+                } else {
+                    System.out.println("Invalid hero count. Please enter a number between 1 and 3.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
+        }
+        return size;
+    }
+
+    public static int getHeroName(int heroIndex){
+        
+        System.out.print("Select your "+ heroIndex + " hero ");
+        System.out.print("(1: Warrior, 2: Sorcerer, 3: Paladin): ");
+        String input = scanner.nextLine().trim();
+        isGameExit(input);
+        int choice = Integer.parseInt(input);
+        return choice;
+    }
+
     public static boolean getInput(GameManager gm) {
         boolean running = true;
         String input;
@@ -80,53 +117,120 @@ public  class Input {
 
     }
 
-    public static boolean getMarketInput(GameManager gm) {
-        boolean running = true;
-        String input;
-        while(true){
-            input = scanner.nextLine().trim().toUpperCase();
-        if (!input.equals("W") &&
-            !input.equals("S") &&
-            !input.equals("B") &&
-            !input.equals("S") &&
-            !input.equals("Q")) {
-            
-            System.out.println("Invalid input. Please try again.");
-            }
-        else {
-                isGameExit(input);
-                break;
-            }
+    public static boolean getMarketInput(Market market, User user) {
+        String input = scanner.nextLine().trim().toUpperCase();
+        if (!input.equals("B") && !input.equals("S") && !input.equals("E") && !input.equals("Q")) {
+            System.out.println("Invalid input. Try B (buy), S (sell), E (exit), Q (quit).");
+            return true; 
+        }
+        isGameExit(input); 
+
+        switch (input) {
+            case "B":
+                handleBuy(market, user);
+                return true;
+            case "S":
+                handleSell(market, user);
+                return true;
+            case "E":
+                return false; // exit market loop
+            case "Q":
+                return false; // already handled, safety
+            default:
+                return true;
+        }
+    }
+
+    private static void handleBuy(Market market, User user) {
+        if (user.getParty().getHeroes().isEmpty()) {
+            System.out.println("No heroes in party to buy items.");
+            return;
         }
 
-        if (input.equals("W")) {
-            // implement move up in market here
-            System.out.println("Move up in market - feature not implemented yet.");
 
-        } 
+        // Choose hero
+        System.out.println("Select hero to buy for:");
+        for (int i = 0; i < user.getParty().getHeroes().size(); i++) {
+            Hero h = user.getParty().getHeroes().get(i);
+            System.out.println("(" + (i + 1) + ") " + h.getName() + " [Level: " + h.getLevel() + ", Gold: " + h.getGold() + "]");
+        }
+        System.out.print("Hero number: ");
+        int heroIdx = readIntSafe();
+        if (heroIdx < 1 || heroIdx > user.getParty().getHeroes().size()) {
+            System.out.println("Invalid hero selection.");
+            return;
+        }
 
-        else if (input.equals("S")) {
-            // implement move down in market here
-            System.out.println("Move down in market - feature not implemented yet.");
 
-        } 
+        Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
 
-        else if (input.equals("B")) {
-            // implement buy here
-            System.out.println("Buy hero - feature not implemented yet.");
+        // Choose item to buy indexss
+        int primaryCount = market.getItems().size();
+        int secondCount = market.getSecondHandItems().size();
+        if (primaryCount + secondCount == 0) {
+            System.out.println("Market is empty.");
+            return;
+        }
+        System.out.print("Enter item index to buy: ");
+        int itemIdx = readIntSafe();
+        if (itemIdx < 1 || itemIdx > primaryCount + secondCount) {
+            System.out.println("Invalid item index.");
+            return;
+        }
 
-        } else if (input.equals("S")) {
-            // implement sell here
-            System.out.println("Sell hero - feature not implemented yet.");
 
-        } else if (input.equals("Q")) {
-            running = false;
-
+        Item selected;
+        if (itemIdx <= primaryCount) {
+            selected = market.getItems().get(itemIdx - 1);
         } else {
-            System.out.println("Unknown command.");
+            selected = market.getSecondHandItems().get(itemIdx - primaryCount - 1);
         }
-        return running;
+        market.buyItem(hero, selected);
+    }
 
+    private static void handleSell(Market market, User user) {
+        if (user.getParty().getHeroes().isEmpty()) {
+            System.out.println("No heroes in party to sell items.");
+            return;
+        }
+        System.out.println("Select hero to sell from:");
+        for (int i = 0; i < user.getParty().getHeroes().size(); i++) {
+            Hero h = user.getParty().getHeroes().get(i);
+            System.out.println("(" + (i + 1) + ") " + h.getName() + " [Gold: " + h.getGold() + "]");
+        }
+        System.out.print("Hero number: ");
+        int heroIdx = readIntSafe();
+        if (heroIdx < 1 || heroIdx > user.getParty().getHeroes().size()) {
+            System.out.println("Invalid hero selection.");
+            return;
+        }
+        Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
+        if (hero.getInventory().getEntries().isEmpty()) {
+            System.out.println("Inventory empty.");
+            return;
+        }
+        System.out.println("Select item to sell:");
+        for (int i = 0; i < hero.getInventory().getEntries().size(); i++) {
+            InventoryEntry entry = hero.getInventory().getEntries().get(i);
+            System.out.println("(" + (i + 1) + ") " + entry.getItem().getName() + " x" + entry.getQuantity() + " (Price: " + entry.getItem().getPrice() + ")");
+        }
+        System.out.print("Item number: ");
+        int itemIdx = readIntSafe();
+        if (itemIdx < 1 || itemIdx > hero.getInventory().getEntries().size()) {
+            System.out.println("Invalid item selection.");
+            return;
+        }
+        InventoryEntry entry = hero.getInventory().getEntries().get(itemIdx - 1);
+        market.sellItem(hero, entry.getItem().getName());
+    }
+
+    private static int readIntSafe() {
+        String raw = scanner.nextLine().trim();
+        try {
+            return Integer.parseInt(raw);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     
@@ -145,7 +249,7 @@ public  class Input {
                 !input.equals("Q")) {  // Quit
                 System.out.println("Invalid input. Please try again.");
             } else {
-                isGameExit(input); // Q will System.exit(0)
+                isGameExit(input); // Q
                 break;
             }
         }
@@ -166,8 +270,7 @@ public  class Input {
             battle.printInfo();
 
         } else if (input.equals("Q")) {
-            // If isGameExit() is kept with System.exit, this line is never reached,
-            // but we keep it for safety if you later change isGameExit
+
             running = false;
         }
 
