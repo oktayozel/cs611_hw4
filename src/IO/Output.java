@@ -43,28 +43,28 @@ public class Output {
 
 
     static List<String> sorcererArt = Arrays.asList(
-    "                                       ____ ",
-    "                                     .'* *.'",
-    "                                  __/_*_*(_",
-    "                                 / _______ \\",
-    "                                _\\_)/___\\(_/_ ",
-    "                               / _((\\- -/))_ \\",
-    "                               \\ \\())(-)(()/ /",
-    "                                ' \\(((()))/ '",
-    "                               / ' \\)).))/ ' \\",
-    "                              / _ \\ - | - /_  \\",
-    "                             (   ( .;''';. .'  )",
-    "                             _\"__ /    )\\ __\"/_",
-    "                               \\/  \\   ' /  \\/",
-    "                                .'  '...' ' )",
-    "                                 / /  |  \\ \\",
-    "                                / .   .   . \\",
-    "                               /   .     .   \\",
-    "                              /   /   |   \\   \\",
-    "                            .'   /    b    '.  '.",
-    "                        _.-'    /     Bb     '-. '-._ ",
-    "                    _.-'       |      BBb       '-.  '-. ",
-    "                   (___________\\____.dBBBb.________)____)");
+    "                               ____ ",
+    "                                .'* *.'",
+    "                             __/_*_*(_",
+    "                            / _______ \\",
+    "                           _\\_)/___\\(_/_ ",
+    "                          / _((\\- -/))_ \\",
+    "                          \\ \\())(-)(()/ /",
+    "                           ' \\(((()))/ '",
+    "                          / ' \\)).))/ ' \\",
+    "                         / _ \\ - | - /_  \\",
+    "                        (   ( .;''';. .'  )",
+    "                        _\"__ /    )\\ __\"/_",
+    "                          \\/  \\   ' /  \\/",
+    "                           .'  '...' ' )",
+    "                            / /  |  \\ \\",
+    "                           / .   .   . \\",
+    "                          /   .     .   \\",
+    "                         /   /   |   \\   \\",
+    "                       .'   /    b    '.  '",
+    "                   _.-'    /     Bb     '-. '",
+    "                          |      BBb       '-. ",
+    "                   _______\\____.dBBBb.________)");
 
 
     static List<String> warriorArt = Arrays.asList(
@@ -264,7 +264,7 @@ public class Output {
         for( int i = 0 ; i < battle.getParty().getHeroes().size(); i++){
             Hero hero = battle.getParty().getHeroes().get(i);
             Monster monster = battle.getMonsters().get(i);
-            System.out.printf("%-50s X %-50s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
+            System.out.printf("%-50s X %-100s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
         }
 
     }

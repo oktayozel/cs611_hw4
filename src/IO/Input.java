@@ -286,6 +286,27 @@ public  class Input {
         return running;
     }
 
+    // Per-hero action prompt for the multi-hero turn system
+    // Returns one of: A, S, P, E. If user presses I, shows info and re-prompts. Q exits the game via isGameExit.
+    public static char getHeroBattleAction(Hero hero, Battle battle) {
+        while (true) {
+            System.out.print("Action for " + hero.getName() + " (A=Attack, S=Spell, P=Potion, E=Equip, I=Info, Q=Quit): ");
+            String raw = scanner.nextLine().trim().toUpperCase();
+            isGameExit(raw); // Q exits entire game consistently with other inputs
+            if (!raw.equals("A") && !raw.equals("S") && !raw.equals("P") && !raw.equals("E") && !raw.equals("I") && !raw.equals("Q")) {
+                System.out.println("Invalid choice. Try again.");
+                continue;
+            }
+            if (raw.equals("I")) {
+                System.out.println("\n--- Battle Info ---");
+                battle.printInfo();
+                waitForEnter();
+                continue; // re-prompt for this hero's action
+            }
+            return raw.charAt(0);
+        }
+    }
+
     // Utility: pause and resume at the same context
     public static void waitForEnter() {
         System.out.print("\nPress Enter to continue...");

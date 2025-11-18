@@ -37,109 +37,66 @@ public class Battle {
     }
 
     public void start() {
-        
         while (!finished) {
             Output.displayBattle(this);
-
             System.out.println("\n--- Heroes' Turn ---");
-            Output.printBattleMenu();
-
-            boolean keepPlaying = Input.getBattleInput(gm, this);
-            if (!keepPlaying) {
-                return;
-            }
-
-            if (checkBattleEnd()) {
-                break;
-            }
-
+            heroesTurn();
+            if (finished || checkBattleEnd()) break;
             System.out.println("\n--- Monsters' Turn ---");
             monstersTurn();
-
-            if (checkBattleEnd()) {
-                break;
-            }
-
+            if (finished || checkBattleEnd()) break;
             endOfRoundRegeneration();
         }
-
         gm.getUser().setInBattle(false);
-
-        if (heroesWon) {
-            System.out.println("Heroes won the battle!");
-        } else {
-            System.out.println("All heroes have fallen... Game over.");
-        }
-
+        System.out.println(heroesWon ? "Heroes won the battle!" : "All heroes have fallen... Game over.");
         System.out.println("===== BATTLE ENDS =====");
     }
 
-
-    public void heroAttack() {
-        List<Hero> heroes = party.getHeroes();
-        List<Hero> aliveHeroes = new ArrayList<>();
-        for (Hero h : heroes) if (!h.isFainted()) aliveHeroes.add(h);
-        if (aliveHeroes.isEmpty()) {
-            System.out.println("No conscious heroes to attack.");
-            return;
+    // Each alive hero gets exactly one action per round for fairness
+    private void heroesTurn() {
+        List<Hero> alive = new ArrayList<>();
+        for (Hero h : party.getHeroes()) if (!h.isFainted()) alive.add(h);
+        if (alive.isEmpty()) return; // battle end will be detected after
+        for (Hero h : alive) {
+            char action = Input.getHeroBattleAction(h, this);
+            if (action == 'Q') { finished = true; return; }
+            switch (action) {
+                case 'A': heroAttack(h); break;
+                case 'S': castSpell(h); break;
+                case 'P': usePotion(h); break;
+                case 'E': changeEquipment(h); break;
+                default: break; // Info handled inside input method
+            }
+            if (checkBattleEnd()) return; // early break if battle resolved mid-turn
         }
-        System.out.println("Select hero to attack:");
-        for (int i = 0; i < aliveHeroes.size(); i++) {
-            Hero h = aliveHeroes.get(i);
-            System.out.println("(" + (i+1) + ") " + h.getName() + " HP:" + h.getHP());
-        }
-        int hIdx = Input.readInt(1, aliveHeroes.size()) - 1;
-        Hero attacker = aliveHeroes.get(hIdx);
+    }
 
+
+    public void heroAttack(Hero attacker) {
+        if (attacker.isFainted()) { System.out.println(attacker.getName() + " cannot act (fainted)."); return; }
         List<Monster> aliveMonsters = new ArrayList<>();
         for (Monster m : monsters) if (!m.isDefeated()) aliveMonsters.add(m);
-        if (aliveMonsters.isEmpty()) {
-            System.out.println("All monsters are already defeated.");
-            return;
-        }
+        if (aliveMonsters.isEmpty()) { System.out.println("All monsters are already defeated."); return; }
         System.out.println("Select target monster:");
         for (int i = 0; i < aliveMonsters.size(); i++) {
             Monster m = aliveMonsters.get(i);
             System.out.println("(" + (i+1) + ") " + m.getName() + " HP:" + m.getHP());
         }
+        System.out.print("> ");
         int mIdx = Input.readInt(1, aliveMonsters.size()) - 1;
         Monster target = aliveMonsters.get(mIdx);
-
-        // Dodge check
-        if (Math.random() < target.getDodge()) {
-            System.out.println(target.getName() + " dodged the attack!");
-            return;
-        }
+        if (Math.random() < target.getDodge()) { System.out.println(target.getName() + " dodged the attack!"); return; }
         int rawDamage = attacker.computeAttackDamage();
         int finalDamage = Math.max(0, rawDamage - target.getDefense());
         target.takeDamage(finalDamage);
         System.out.println(attacker.getName() + " hits " + target.getName() + " for " + finalDamage + " damage.");
-        if (target.isDefeated()) {
-            System.out.println(target.getName() + " is defeated!");
-        }
+        if (target.isDefeated()) System.out.println(target.getName() + " is defeated!");
     }
 
-    public void castSpell() {
-        List<Hero> heroes = party.getHeroes();
-        List<Hero> aliveHeroes = new ArrayList<>();
-        for (Hero h : heroes) if (!h.isFainted()) aliveHeroes.add(h);
-        if (aliveHeroes.isEmpty()) {
-            System.out.println("No conscious heroes to cast spells.");
-            return;
-        }
-        System.out.println("Select hero to cast a spell:");
-        for (int i = 0; i < aliveHeroes.size(); i++) {
-            Hero h = aliveHeroes.get(i);
-            System.out.println("(" + (i+1) + ") " + h.getName() + " MP:" + h.getMP());
-        }
-        int hIdx = Input.readInt(1, aliveHeroes.size()) - 1;
-        Hero caster = aliveHeroes.get(hIdx);
-
-        // Gather spells
+    public void castSpell(Hero caster) {
+        if (caster.isFainted()) { System.out.println(caster.getName() + " cannot act (fainted)."); return; }
         List<InventoryEntry> spellEntries = new ArrayList<>();
-        for (InventoryEntry entry : caster.getInventory().getEntries()) {
-            if (entry.getItem() instanceof Spell) spellEntries.add(entry);
-        }
+        for (InventoryEntry entry : caster.getInventory().getEntries()) if (entry.getItem() instanceof Spell) spellEntries.add(entry);
         if (spellEntries.isEmpty()) {
             System.out.println("No spells in inventory.");
             return;
@@ -207,26 +164,10 @@ public class Battle {
         if (target.isDefeated()) System.out.println(target.getName() + " is defeated!");
     }
 
-    public void usePotion() {
-        List<Hero> heroes = party.getHeroes();
-        List<Hero> aliveHeroes = new ArrayList<>();
-        for (Hero h : heroes) if (!h.isFainted()) aliveHeroes.add(h);
-        if (aliveHeroes.isEmpty()) {
-            System.out.println("No conscious heroes to use potions.");
-            return;
-        }
-        System.out.println("Select hero to use a potion:");
-        for (int i = 0; i < aliveHeroes.size(); i++) {
-            Hero h = aliveHeroes.get(i);
-            System.out.println("(" + (i+1) + ") " + h.getName() + " HP:" + h.getHP() + " MP:" + h.getMP());
-        }
-        int hIdx = Input.readInt(1, aliveHeroes.size()) - 1;
-        Hero user = aliveHeroes.get(hIdx);
-
+    public void usePotion(Hero user) {
+        if (user.isFainted()) { System.out.println(user.getName() + " cannot act (fainted)."); return; }
         List<InventoryEntry> potionEntries = new ArrayList<>();
-        for (InventoryEntry entry : user.getInventory().getEntries()) {
-            if (entry.getItem() instanceof Potion) potionEntries.add(entry);
-        }
+        for (InventoryEntry entry : user.getInventory().getEntries()) if (entry.getItem() instanceof Potion) potionEntries.add(entry);
         if (potionEntries.isEmpty()) {
             System.out.println("No potions available.");
             return;
@@ -245,22 +186,8 @@ public class Battle {
         System.out.println(user.getName() + " uses " + potion.getName() + ".");
     }
 
-    public void changeEquipment() {
-        List<Hero> heroes = party.getHeroes();
-        List<Hero> aliveHeroes = new ArrayList<>();
-        for (Hero h : heroes) if (!h.isFainted()) aliveHeroes.add(h);
-        if (aliveHeroes.isEmpty()) {
-            System.out.println("No conscious heroes to change equipment.");
-            return;
-        }
-        System.out.println("Select hero to equip:");
-        for (int i = 0; i < aliveHeroes.size(); i++) {
-            Hero h = aliveHeroes.get(i);
-            System.out.println("(" + (i+1) + ") " + h.getName());
-        }
-        int hIdx = Input.readInt(1, aliveHeroes.size()) - 1;
-        Hero hero = aliveHeroes.get(hIdx);
-
+    public void changeEquipment(Hero hero) {
+        if (hero.isFainted()) { System.out.println(hero.getName() + " cannot act (fainted)."); return; }
         List<InventoryEntry> weaponEntries = new ArrayList<>();
         List<InventoryEntry> armorEntries = new ArrayList<>();
         for (InventoryEntry entry : hero.getInventory().getEntries()) {

@@ -72,7 +72,7 @@ public class GameManager {
         if (tile.isCommon()) {
             int encounterChance = rand.nextInt(10);
             if (encounterChance < 2) {  // %20 chance to battle
-                System.out.println("OH NO! Monsters here! Battle starts now!");
+                Output.narrative("OH NO! Monsters here! Battle starts now!");
                 user.setInBattle(true);
                 Battle battle = new Battle(this);
                 battle.start();    
