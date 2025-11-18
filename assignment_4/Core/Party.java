@@ -52,7 +52,7 @@ public class Party {
     public void printPartyInfo() {
         System.out.println("===== PARTY =====");
         for (Hero h : heroes) {
-            System.out.println(h); 
+            IO.Output.displayHeroFullInfo(h);
         }
         System.out.println("=================");
     }

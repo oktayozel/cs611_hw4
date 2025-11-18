@@ -3,6 +3,8 @@ package IO;
 import assignment_4.Monster.Monster;
 import assignment_4.Hero.Hero;
 import assignment_4.Item.Item;
+import assignment_4.Item.Weapon;
+import assignment_4.Item.Armor;
 import assignment_4.Market.Market;
 import assignment_4.Battle;
 import assignment_4.Core.User;
@@ -170,7 +172,7 @@ public class Output {
         
     }
 
-    public static void displayHeroStatistics(Hero hero) {
+    public static void displayHeroFullInfo(Hero hero) {
         System.out.println("===== STATISTICS of " + hero.getName() + " =====");
         System.out.println("Level: " + hero.getLevel());
         System.out.println("Health Points (HP): " + hero.getHP());
@@ -178,6 +180,21 @@ public class Output {
         System.out.println("Strength: " + hero.getStrength());
         System.out.println("Agility: " + hero.getAgility());
         System.out.println("Dexterity: " + hero.getDexterity());
+        System.out.println("Experience: " + hero.getExperience());
+        System.out.println("Gold: " + hero.getGold());
+        System.out.println("=====================================");
+    }
+
+    // Battle-focused hero info (equipped items)
+    public static void displayHeroBattleInfo(Hero hero) {
+        System.out.println("===== HERO in Battle: " + hero.getName() + " =====");
+        System.out.println("Level: " + hero.getLevel());
+        System.out.println("HP: " + hero.getHP());
+        System.out.println("MP: " + hero.getMP());
+        Weapon w = hero.getEquippedWeapon();
+        Armor a = hero.getEquippedArmor();
+        System.out.println("Equipped Weapon: " + (w != null ? w.getName() + " (DMG:" + w.getDamage() + ")" : "None"));
+        System.out.println("Equipped Armor: " + (a != null ? a.getName() + " (DR:" + a.getDamageReduction() + ")" : "None"));
         System.out.println("=====================================");
     }
 

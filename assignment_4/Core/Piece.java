@@ -1,5 +1,7 @@
 package assignment_4.Core;
 
+import IO.Output;
+
 public class Piece {
 
     private int row;
@@ -35,6 +37,7 @@ public class Piece {
         Tile dest = board.getTile(newRow, newCol);
         if (!dest.isAccessible()) {
             System.out.println("That tile is inaccessible!");
+            Output.sleep(1000);
             return false;
         }
 

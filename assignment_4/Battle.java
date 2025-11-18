@@ -87,7 +87,13 @@ public class Battle {
     public void printInfo() {
         System.out.println("=== Battle Info ===");
         System.out.println("-- Heroes --");
-        gm.getUser().getParty().printPartyInfo();
+        for (assignment_4.Hero.Hero h : gm.getUser().getParty().getHeroes()) {
+            IO.Output.displayHeroBattleInfo(h);
+        }
+        System.out.println("-- Monsters --");
+        for (assignment_4.Monster.Monster m : monsters) {
+            IO.Output.displayMonsterStatistics(m);
+        }
     }
 
     

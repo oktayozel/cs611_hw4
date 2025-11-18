@@ -1,6 +1,8 @@
 package assignment_4.Hero;
 
 import assignment_4.Inventory.Inventory;
+import assignment_4.Item.Weapon;
+import assignment_4.Item.Armor;
 
 public class Hero {
     private String name;
@@ -11,8 +13,11 @@ public class Hero {
     private int dexterity; // 
     private int agility;
     private int gold;
+    private int experience;
     protected String heroClass;
     private Inventory inventory;
+    private Weapon equippedWeapon; 
+    private Armor equippedArmor;  
 
     public Hero(String name, int level, int HP, int MP, int strength, int dexterity, int agility, int gold, Inventory inventory) {
         this.name = name;
@@ -24,6 +29,9 @@ public class Hero {
         this.agility = agility;
         this.gold = gold;
         this.inventory = inventory;
+        this.experience = 0;
+        this.equippedWeapon = null;
+        this.equippedArmor = null;
     }
 
     //getters and setters 
@@ -59,10 +67,20 @@ public class Hero {
     public int getGold() {
         return gold;
     }
+    public int getExperience() {
+        return experience;
+    }
     // getter for inventory
     public Inventory getInventory() {
         return inventory;
     }
+
+    public Weapon getEquippedWeapon() { return equippedWeapon; }
+    public Armor getEquippedArmor() { return equippedArmor; }
+    public void setEquippedWeapon(Weapon w) { this.equippedWeapon = w; }
+    public void setEquippedArmor(Armor a) { this.equippedArmor = a; }
+    public void addExperience(int xp) { if (xp > 0) this.experience += xp; }
+    public void setExperience(int xp) { this.experience = Math.max(0, xp); }
 
     // Add gold to hero (e.g. from selling or battle rewards)
     public void addGold(int amount) {
@@ -94,6 +112,7 @@ public class Hero {
                 ", Level=" + level +
                 ", HP=" + HP +
                 ", MP=" + MP +
+                ", EXP=" + experience +
                 ", Gold=" + gold +
                 '}';
     }
