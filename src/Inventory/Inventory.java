@@ -75,6 +75,11 @@ public class Inventory {
             }
         }
     }
+    public void toStringList() {
+        for (InventoryEntry entry : entries) {
+            System.out.println(entry.getItem().getName() + " x" + entry.getQuantity());
+        }
+    }
 
 
 }

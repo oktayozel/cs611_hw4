@@ -49,10 +49,11 @@ public class Hero {
     public void setGold(int gold) { this.gold = Math.max(0, gold); }
 
     // Experience helpers
+    
     public void addExperience(int xp) { if (xp > 0) this.experience += xp; }
     public void setExperience(int xp) { this.experience = Math.max(0, xp); }
 
-    // ===== Combat helpers =====
+
     public double getDodgeChance() {
         double chance = agility * 0.002; // spec: agility * 0.002
         if (chance < 0) chance = 0;
@@ -115,6 +116,38 @@ public class Hero {
             case "DEFENSE": /* extend later if needed */ break;
             default: break;
         }
+    }
+
+    // level up logic for the hero
+    public boolean checkLevelUp() {
+        boolean leveled = false;
+        while (experience >= level * 10) {
+            level++;
+            leveled = true;
+
+            // HP refresh  and starts increase
+            HP = level * 100; 
+            MP = (int)Math.round(MP * 1.10);
+            strength = (int)Math.max(1, Math.round(strength * 1.05));
+            dexterity = (int)Math.max(1, Math.round(dexterity * 1.05));
+            agility = (int)Math.max(1, Math.round(agility * 1.05));
+
+            // some extra increases
+            if ("Warrior".equals(heroClass)) {
+                strength = (int)Math.max(1, Math.round(strength * 1.05));
+                agility  = (int)Math.max(1, Math.round(agility  * 1.05));
+            } else if ("Sorcerer".equals(heroClass)) {
+                dexterity = (int)Math.max(1, Math.round(dexterity * 1.05));
+                agility   = (int)Math.max(1, Math.round(agility   * 1.05));
+            } else if ("Paladin".equals(heroClass)) {
+                strength = (int)Math.max(1, Math.round(strength * 1.05));
+                dexterity = (int)Math.max(1, Math.round(dexterity * 1.05));
+            }
+        }
+        if (leveled) {
+            System.out.println(name + " leveled up! New level: " + level);
+        }
+        return leveled;
     }
     // Basic getters
     public String getName(){ 

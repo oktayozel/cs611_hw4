@@ -241,7 +241,7 @@ public class Output {
         System.out.println("▐░░░░░░░░░░▌ ▐░▌       ▐░▌     ▐░▌          ▐░▌     ▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌    ▐░▌       ▐░▌▐░▌       ▐░▌▐░░░░░░░░░░░▌▐░▌      ▐░░▌▐░▌       ▐░▌");             
         System.out.println(" ▀▀▀▀▀▀▀▀▀▀   ▀         ▀       ▀            ▀       ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀      ▀         ▀  ▀         ▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀        ▀▀  ▀         ▀ ");  
         System.out.println("=====================================================================================================================================================");
-
+        someSpace();
         System.out.println("HEROES                                                                Round {" + battle.getRound() + "}                                                                   MONSTERS");
         System.out.println("=====================================================================================================================================================");
         for( int i = 0 ; i < battle.getParty().getHeroes().size(); i++){
@@ -289,33 +289,50 @@ public class Output {
     }
 
     public static void printRandomNoBattleMessage(int number){
+
         if(number ==3 ){
-            System.out.println("You sneak past the monsters without being noticed. Lucky you!");
+            narrative("You sneak past the monsters without being noticed. Lucky you!");
         }
         if(number ==4 ){
-            System.out.println("The monsters are too busy fighting among themselves to notice you. You slip by unnoticed.");
+            narrative("The monsters are too busy fighting among themselves to notice you. You slip by unnoticed.");
         }
         if(number ==5 ){
-            System.out.println("A sudden fog envelops the area, allowing you to move unseen past the monsters.");
+            narrative("A sudden fog envelops the area, allowing you to move unseen past the monsters.");
         }
         if(number ==6 ){    
-            System.out.println("No monsters in sight! You continue your journey unchallenged.");
+            narrative("No monsters in sight! You continue your journey unchallenged.");
         }
         if(number ==7 ){    
-            System.out.println("No monsters here! Cowards");
+            narrative("No monsters here! Cowards");
         }
         if(number == 8 ){    
-            System.out.println("The monsters seem to have retreated for now. You proceed with caution.");
+            narrative("The monsters seem to have retreated for now. You proceed with caution.");
         }
         if(number == 9){
-            System.out.println("You will keep chasing them until no monster is left!");
+            narrative("You will keep chasing them until no monster is left!");
         }
         if(number == 10){
-            System.out.println("Looks like you are very good at your job, no monsters here!");
+            narrative("Looks like you are very good at your job, no monsters here!");
         }
 
     }
 
+    public static void narrative(String message){
+
+        int cnt = 10;
+        while (cnt > 0) {
+            System.out.println(">");
+            sleep(200);
+            cnt--;
+        }
+        System.out.println("\n>--- " + message + " ---\n");
+        while (cnt > 0) {
+            System.out.println(">");
+            cnt--;
+        }
+        sleep(4000);
+
+    }
 
 
     // INPUT OPTIONS

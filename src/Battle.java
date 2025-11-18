@@ -182,7 +182,6 @@ public class Battle {
         target.takeDamage(finalDamage);
         System.out.println(caster.getName() + " casts " + spell.getName() + " on " + target.getName() + " for " + finalDamage + " damage.");
 
-        // Apply spell type debuff
         String type = spell.getSpellType().toUpperCase();
         switch (type) {
             case "FIRE":
@@ -326,10 +325,15 @@ public class Battle {
                 continue;
             }
             int rawDamage = m.getBaseDamage();
-            int finalDamage = Math.max(0, rawDamage - target.getArmorReduction());
-            target.takeDamage(finalDamage);
-            System.out.println(m.getName() + " hits " + target.getName() + " for " + finalDamage + " damage.");
-            if (target.isFainted()) System.out.println(target.getName() + " has fainted!");
+            target.takeDamage(rawDamage);
+            System.out.println(m.getName() + " hits " + target.getName() + " for " + Math.max(0, rawDamage - target.getArmorReduction()) + " damage.");
+            if (target.isFainted()) {
+                System.out.println(target.getName() + " has fainted!");
+                // Award EXP to monster for defeating a hero
+                // remove fainted hero from alive list to prevent further targeting this turn
+                aliveHeroes.remove(target);
+                if (aliveHeroes.isEmpty()) break;
+            }
         }
     }
 
@@ -360,20 +364,23 @@ public class Battle {
     }
 
     private void distributeRewards() {
-        int totalMonsterLevel = 0;
-        for (Monster m : monsters) totalMonsterLevel += m.getLevel();
-        int avgMonsterLevel = monsters.isEmpty() ? 0 : totalMonsterLevel / monsters.size();
-        int goldReward = 100 * (avgMonsterLevel + 1);
-        int expReward = 50 * (avgMonsterLevel + 1);
+        int totalGold = 0;
+        int totalExp = 0;
+        for (Monster m : monsters) {
+            totalGold += m.getLevel() * 100; 
+            totalExp  += m.getLevel();    
+        }
         for (Hero h : party.getHeroes()) {
             if (h.isFainted()) {
                 h.reviveHalf();
-                System.out.println(h.getName() + " is revived with half HP/MP.");
+                System.out.println(h.getName() + " is revived with half HP/MP (no rewards). ");
+                continue; // no gold/exp for fainted heroes
             }
-            h.addGold(goldReward);
-            h.addExperience(expReward);
+            h.addGold(totalGold);
+            h.addExperience(totalExp);
+            h.checkLevelUp();
         }
-        System.out.println("Rewards distributed: +" + goldReward + " gold, +" + expReward + " EXP to each hero.");
+        System.out.println("Rewards distributed: +" + totalGold + " gold, +" + totalExp + " EXP (per surviving hero).");
     }
 
     public void setHeroesWon(boolean heroesWon) {

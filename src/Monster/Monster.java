@@ -46,4 +46,5 @@ public class Monster {
     public void reduceDodgeBy10Percent() {
         dodge = Math.max(0.0, dodge * 0.9);
     }
+
 }
