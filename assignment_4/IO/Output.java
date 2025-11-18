@@ -250,12 +250,6 @@ public class Output {
             System.out.printf("%-50s X %-50s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
         }
 
-
-
-
-
-
-
     }
 
 
@@ -292,6 +286,34 @@ public class Output {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    public static void printRandomNoBattleMessage(int number){
+        if(number ==3 ){
+            System.out.println("You sneak past the monsters without being noticed. Lucky you!");
+        }
+        if(number ==4 ){
+            System.out.println("The monsters are too busy fighting among themselves to notice you. You slip by unnoticed.");
+        }
+        if(number ==5 ){
+            System.out.println("A sudden fog envelops the area, allowing you to move unseen past the monsters.");
+        }
+        if(number ==6 ){    
+            System.out.println("No monsters in sight! You continue your journey unchallenged.");
+        }
+        if(number ==7 ){    
+            System.out.println("No monsters here! Cowards");
+        }
+        if(number == 8 ){    
+            System.out.println("The monsters seem to have retreated for now. You proceed with caution.");
+        }
+        if(number == 9){
+            System.out.println("You will keep chasing them until no monster is left!");
+        }
+        if(number == 10){
+            System.out.println("Looks like you are very good at your job, no monsters here!");
+        }
+
     }
 
 

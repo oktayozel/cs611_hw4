@@ -5,8 +5,9 @@ import IO.Output;
 import IO.Input;
 import assignment_4.Battle;
 
-public class GameManager {
 
+public class GameManager {
+    private Random rand = new Random();
     private static final int DEFAULT_BOARD_SIZE = 8;
 
     private Board board;
@@ -68,11 +69,21 @@ public class GameManager {
         if (tile == null) return;
 
         if (tile.isCommon()) {
-            
-            System.out.println("Battle starts now!");
-            user.setInBattle(true);
-            Battle battle = new Battle(this);
-            battle.start();
+            int encounterChance = rand.nextInt(10);
+            if (encounterChance < 2) {  // %20 chance to battle
+                System.out.println("OH NO! Monsters here! Battle starts now!");
+                user.setInBattle(true);
+                Battle battle = new Battle(this);
+                battle.start();    
+            }
+            else {
+                System.out.println("No monsters encountered this time.");
+            }
+
+
+
+
+
         }
     }
 
