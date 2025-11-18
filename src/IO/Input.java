@@ -98,6 +98,7 @@ public  class Input {
 
         } else if (input.equals("I")) {
             gm.getUser().getParty().printPartyInfo();
+            waitForEnter();
 
         } else if (input.equals("M")) {
             gm.tryEnterMarket();
@@ -114,8 +115,8 @@ public  class Input {
 
     public static boolean getMarketInput(Market market, User user) {
         String input = scanner.nextLine().trim().toUpperCase();
-        if (!input.equals("B") && !input.equals("S") && !input.equals("E") && !input.equals("Q")) {
-            System.out.println("Invalid input. Try B (buy), S (sell), E (exit), Q (quit).");
+        if (!input.equals("B") && !input.equals("S") && !input.equals("I") && !input.equals("E") && !input.equals("Q")) {
+            System.out.println("Invalid input. Try B (buy), S (sell), I (info), E (exit), Q (quit).");
             return true; 
         }
         isGameExit(input); 
@@ -126,6 +127,11 @@ public  class Input {
                 return true;
             case "S":
                 handleSell(market, user);
+                return true;
+            case "I":
+                // Show full party info while staying in market
+                user.getParty().printPartyInfo();
+                waitForEnter();
                 return true;
             case "E":
                 return false; // exit market loop
@@ -150,12 +156,14 @@ public  class Input {
             System.out.println("(" + (i + 1) + ") " + h.getName() + " [Level: " + h.getLevel() + ", Gold: " + h.getGold() + "]");
         }
         System.out.print("Hero number: ");
+        
         int heroIdx = readInt(1, user.getParty().getHeroes().size());
 
 
         Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
+        System.out.println("Hero Gold Budget: " + hero.getGold());
 
-        // Choose item to buy indexss
+        // Choose item to buy index
         int primaryCount = market.getItems().size();
         int secondCount = market.getSecondHandItems().size();
         if (primaryCount + secondCount == 0) {
@@ -172,7 +180,13 @@ public  class Input {
         } else {
             selected = market.getSecondHandItems().get(itemIdx - primaryCount - 1);
         }
-        market.buyItem(hero, selected);
+        if (market.buyItem(hero, selected)) {
+            System.out.println("Purchase successful.");
+        } else {
+            System.out.println("Purchase failed.");
+        }
+        Output.sleep(4000);
+
     }
 
     private static void handleSell(Market market, User user) {
@@ -190,6 +204,7 @@ public  class Input {
         Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
         if (hero.getInventory().getEntries().isEmpty()) {
             System.out.println("Inventory empty.");
+            Output.sleep(4000);
             return;
         }
         System.out.println("Select item to sell:");
@@ -200,7 +215,13 @@ public  class Input {
         System.out.print("Item number: ");
         int itemIdx = readInt(1, hero.getInventory().getEntries().size());
         InventoryEntry entry = hero.getInventory().getEntries().get(itemIdx - 1);
-        market.sellItem(hero, entry.getItem().getName());
+
+        if (market.sellItem(hero, entry.getItem().getName())) {
+            System.out.println("Sale successful.");
+        } else {
+            System.out.println("Sale failed.");
+        }
+        Output.sleep(4000);
     }
 
     public static int readInt(int min, int max) {
@@ -255,6 +276,7 @@ public  class Input {
 
         } else if (input.equals("I")) {
             battle.printInfo();
+            waitForEnter();
 
         } else if (input.equals("Q")) {
 
@@ -262,6 +284,14 @@ public  class Input {
         }
 
         return running;
+    }
+
+    // Utility: pause and resume at the same context
+    public static void waitForEnter() {
+        System.out.print("\nPress Enter to continue...");
+        try {
+            String dummy = scanner.nextLine();
+        } catch (Exception ignored) {}
     }
 
 

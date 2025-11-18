@@ -5,6 +5,7 @@ import src.Hero.Hero;
 import src.Item.Item;
 import src.Item.Weapon;
 import src.Item.Armor;
+import src.Inventory.InventoryEntry;
 import src.Market.Market;
 import src.Battle;
 import src.Core.User;
@@ -173,7 +174,8 @@ public class Output {
     }
 
     public static void displayHeroFullInfo(Hero hero) {
-        System.out.println("===== STATISTICS of " + hero.getName() + " =====");
+        System.out.println("===== HERO: " + hero.getName() + " =====");
+        System.out.println("Class: " + hero.getHeroClass());
         System.out.println("Level: " + hero.getLevel());
         System.out.println("Health Points (HP): " + hero.getHP());
         System.out.println("Mana Points (MP): " + hero.getMP());
@@ -182,6 +184,20 @@ public class Output {
         System.out.println("Dexterity: " + hero.getDexterity());
         System.out.println("Experience: " + hero.getExperience());
         System.out.println("Gold: " + hero.getGold());
+
+        Weapon w = hero.getEquippedWeapon();
+        Armor a = hero.getEquippedArmor();
+        System.out.println("Equipped Weapon: " + (w != null ? w.getName() + " (DMG:" + w.getDamage() + ")" : "None"));
+        System.out.println("Equipped Armor:  " + (a != null ? a.getName() + " (DR:" + a.getDamageReduction() + ")" : "None"));
+
+        System.out.println("Inventory:");
+        if (hero.getInventory() == null || hero.getInventory().getEntries().isEmpty()) {
+            System.out.println("  (empty)");
+        } else {
+            for (InventoryEntry e : hero.getInventory().getEntries()) {
+                System.out.println("  - " + e.getItem().getName() + " x" + e.getQuantity());
+            }
+        }
         System.out.println("=====================================");
     }
 
@@ -223,6 +239,7 @@ public class Output {
             }
         }
         System.out.println("Total items listed: " + (idx - 1));
+        someSpace();
 
     }
 
@@ -355,10 +372,12 @@ public class Output {
         System.out.println("M - enter market (if on market tile)");
         System.out.println("Q - quit game");
         System.out.print("Your move: ");
+        
     }
 
     public static void printMarketMenu() {
         System.out.println("\nMarket Controls:");
+        System.out.println("I - Show Hero Info");
         System.out.println("B - Buy item");
         System.out.println("S - Sell item");
         System.out.println("E - Exit market");
