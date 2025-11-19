@@ -16,6 +16,7 @@ import src.Item.Weapon;
 import src.Item.Armor;
 import src.Item.Spell;
 import src.Item.Potion;
+import src.Default.DefaultReader;
 
 
 public class Battle {
@@ -44,30 +45,35 @@ public class Battle {
             if (finished || checkBattleEnd()) break;
             System.out.println("\n--- Monsters' Turn ---");
             monstersTurn();
-            if (finished || checkBattleEnd()) break;
+            if (finished || checkBattleEnd()){
+                 break;
+            }
             endOfRoundRegeneration();
         }
+
         gm.getUser().setInBattle(false);
         System.out.println(heroesWon ? "Heroes won the battle!" : "All heroes have fallen... Game over.");
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+        Input.inputNewGame();
         System.out.println("===== BATTLE ENDS =====");
     }
 
-    // Each alive hero gets exactly one action per round for fairness
+    // Each alive hero acts once per round (fair turn distribution)
     private void heroesTurn() {
         List<Hero> alive = new ArrayList<>();
         for (Hero h : party.getHeroes()) if (!h.isFainted()) alive.add(h);
-        if (alive.isEmpty()) return; // battle end will be detected after
+        if (alive.isEmpty()) return;
         for (Hero h : alive) {
             char action = Input.getHeroBattleAction(h, this);
-            if (action == 'Q') { finished = true; return; }
             switch (action) {
                 case 'A': heroAttack(h); break;
                 case 'S': castSpell(h); break;
                 case 'P': usePotion(h); break;
                 case 'E': changeEquipment(h); break;
-                default: break; // Info handled inside input method
+                case 'Q': finished = true; return; // safety (normally handled by isGameExit)
+                default: break;
             }
-            if (checkBattleEnd()) return; // early break if battle resolved mid-turn
+            if (checkBattleEnd()) return;
         }
     }
 
@@ -85,16 +91,18 @@ public class Battle {
         System.out.print("> ");
         int mIdx = Input.readInt(1, aliveMonsters.size()) - 1;
         Monster target = aliveMonsters.get(mIdx);
+        // Dodge check
         if (Math.random() < target.getDodge()) { System.out.println(target.getName() + " dodged the attack!"); return; }
         int rawDamage = attacker.computeAttackDamage();
         int finalDamage = Math.max(0, rawDamage - target.getDefense());
         target.takeDamage(finalDamage);
-        System.out.println(attacker.getName() + " hits " + target.getName() + " for " + finalDamage + " damage.");
+        System.out.println(">" + attacker.getName() + " hits " + target.getName() + " for " + finalDamage + " damage.\n");
         if (target.isDefeated()) System.out.println(target.getName() + " is defeated!");
     }
 
     public void castSpell(Hero caster) {
         if (caster.isFainted()) { System.out.println(caster.getName() + " cannot act (fainted)."); return; }
+        // Gather spells
         List<InventoryEntry> spellEntries = new ArrayList<>();
         for (InventoryEntry entry : caster.getInventory().getEntries()) if (entry.getItem() instanceof Spell) spellEntries.add(entry);
         if (spellEntries.isEmpty()) {
@@ -267,7 +275,8 @@ public class Battle {
     private void endOfRoundRegeneration() {
         for (Hero h : party.getHeroes()) h.regenAfterRound();
         incrementRound();
-        System.out.println("End of round regeneration applied. Round now " + round);
+        System.out.println(">End of round regeneration applied. Round now " + round + "\n");
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
     }
 
     private boolean checkBattleEnd() {

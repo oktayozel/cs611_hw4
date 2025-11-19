@@ -9,6 +9,7 @@ import src.Inventory.InventoryEntry;
 import src.Market.Market;
 import src.Battle;
 import src.Core.User;
+import src.Default.DefaultReader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -264,7 +265,7 @@ public class Output {
         for( int i = 0 ; i < battle.getParty().getHeroes().size(); i++){
             Hero hero = battle.getParty().getHeroes().get(i);
             Monster monster = battle.getMonsters().get(i);
-            System.out.printf("%-50s X %-100s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
+            System.out.printf("%-50s X %-200s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
         }
 
     }
@@ -347,7 +348,7 @@ public class Output {
             System.out.println(">");
             cnt--;
         }
-        sleep(4000);
+        sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
 
     }
 

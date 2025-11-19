@@ -5,11 +5,13 @@ import IO.Output;
 import IO.Input;
 import src.Battle;
 import java.util.Random;
+import src.Default.DefaultReader;
 
-
+// Manages the overall game flow if user wants to play again we are creating a new instance of this 
+// so that all game data is reset.
 public class GameManager {
+
     private Random rand = new Random();
-    private static final int DEFAULT_BOARD_SIZE = 8;
 
     private Board board;
     private Piece partyPiece;   
@@ -20,58 +22,71 @@ public class GameManager {
         setupGame();
     }
 
+    // sets up the game by initializing user, party, and board
     private void setupGame() {
-        Output.gameInitialization();
-        Output.someSpace();
-        Output.print("Enter your name: ");
+        Output.gameInitialization(); // start banner
+        Output.someSpace(); // spacing
+        Output.print("Enter your name: "); // get username
         String name = Input.getUsername();
         this.user = new User(name);
         int partySize = Input.getPartySize();
         this.user.getParty().initializeParty(partySize);
 
 
-        this.board = new Board(DEFAULT_BOARD_SIZE);
+        // generate a new board until it's playable
+        this.board = new Board(DefaultReader.getDefaultSettings("board_size"));
+        while(!board.isBoardPlayable()){
+            this.board = new Board(DefaultReader.getDefaultSettings("board_size"));
+        }
 
+
+        // this part finds the first accessible tile for placing the party
         int startRow = 0;
         int startCol = 0;
-        outer:
-        for (int r = 0; r < board.getSize(); r++) {
+        boolean found = false;
+        for (int r = 0; r < board.getSize() && !found; r++) {
             for (int c = 0; c < board.getSize(); c++) {
                 if (board.getTile(r, c).isAccessible()) {
                     startRow = r;
                     startCol = c;
-                    break outer;
+                    found = true;
+                    break;   
                 }
             }
         }
+        // place the party on the found tile
+
         this.partyPiece = new Piece(startRow, startCol);
     }
 
+
+    // starts the main game loop
     public void start() {
         Output.displaySecondWelcomeMessage(user);
         
+        // main game loop
         boolean running = true;
         while (running) {
-
+            // if user not in market or battle then user should see the main flow.
             if (!user.isInMarket() && !user.isInBattle()) {
                 board.printBoard(partyPiece.getRow(), partyPiece.getCol());
                 Output.printMenu();
                 running = Input.getInput(this);
             }
         }
-
-        System.out.println("Thanks for playing!");
+        
+        Output.print("Thanks for playing!");
     }
 
 
-
+    // handles if there is going to be a battle on the common tile when party reaches there
     public void handleTileEvent() {
         Tile tile = board.getTile(partyPiece.getRow(), partyPiece.getCol());
         if (tile == null) return;
 
         if (tile.isCommon()) {
-            int encounterChance = rand.nextInt(10);
-            if (encounterChance < 2) {  // %20 chance to battle
+            int encounterChance = rand.nextInt(100);
+            if (encounterChance < DefaultReader.getDefaultSettings("battle_chance")) {  // %20 chance to battle
                 Output.narrative("OH NO! Monsters here! Battle starts now!");
                 user.setInBattle(true);
                 Battle battle = new Battle(this);
@@ -80,11 +95,6 @@ public class GameManager {
             else {
                 Output.printRandomNoBattleMessage(encounterChance);
             }
-
-
-
-
-
         }
     }
 
@@ -98,7 +108,7 @@ public class GameManager {
 
 
         } else {
-            System.out.println("You are not standing on a market tile.");
+            Output.narrative("You are not standing on a market tile.");
         }
     }
 

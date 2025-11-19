@@ -12,6 +12,7 @@ javac -d out \
       src/Hero/*.java \
       src/Monster/*.java \
       src/Item/*.java \
-      src/Core/*.java
+      src/Core/*.java \
+      src/Default/*.java
 
 echo "Compilation finished. "

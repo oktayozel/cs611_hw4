@@ -8,6 +8,7 @@ import src.Monster.Monster;
 import src.Monster.Dragon;
 import src.Monster.Exoskeleton;
 import src.Monster.Spirit;
+import src.Default.DefaultReader;
 
 public class MonsterSpawner{
     static Random rand = new Random();
@@ -29,17 +30,33 @@ public class MonsterSpawner{
     public static List<Monster> generateRandomMonsters(int count , int level){
         List<Monster> monsters = new ArrayList<>();
         while( count > 0){
-            // decide to the type of the monster
             int monsterType = rand.nextInt(3);
+            Monster m;
             if(monsterType == 0){
-                monsters.add(new Dragon(randomNameList.get(rand.nextInt(randomNameList.size())) + "Dragon" , level, level * 100, level * 30, level * 10, 0.1 + (level * 0.01)) );
+                DefaultReader.MonsterStats base = DefaultReader.readMonster("Dragon");
+                int hp = base.HP * level;
+                int dmg = base.baseDamage * level;
+                int def = base.defense * level;
+                double dodge = Math.min(0.90, base.dodge + (level * 0.01));
+                m = new Dragon(randomNameList.get(rand.nextInt(randomNameList.size())) + "Dragon", level, hp, dmg, def, dodge);
             }
             else if(monsterType == 1){
-                monsters.add(new Exoskeleton(randomNameList.get(rand.nextInt(randomNameList.size())) + "Exoskeleton" , level, level * 120, level * 25, level * 15, 0.05 + (level * 0.01)) );
+                DefaultReader.MonsterStats base = DefaultReader.readMonster("Exoskeleton");
+                int hp = base.HP * level;
+                int dmg = base.baseDamage * level;
+                int def = base.defense * level;
+                double dodge = Math.min(0.85, base.dodge + (level * 0.01));
+                m = new Exoskeleton(randomNameList.get(rand.nextInt(randomNameList.size())) + "Exoskeleton", level, hp, dmg, def, dodge);
             }
             else{
-                monsters.add(new Spirit(randomNameList.get(rand.nextInt(randomNameList.size())) + "Spirit" , level, level * 80, level * 20, level * 5, 0.2 + (level * 0.02)) );
+                DefaultReader.MonsterStats base = DefaultReader.readMonster("Spirit");
+                int hp = base.HP * level;
+                int dmg = base.baseDamage * level;
+                int def = base.defense * level;
+                double dodge = Math.min(0.95, base.dodge + (level * 0.02));
+                m = new Spirit(randomNameList.get(rand.nextInt(randomNameList.size())) + "Spirit", level, hp, dmg, def, dodge);
             }
+            monsters.add(m);
             count--;
         }
         return monsters;

@@ -9,6 +9,7 @@ import src.Market.Market;
 import src.Hero.Hero;
 import src.Inventory.InventoryEntry;
 import src.Item.Item;
+import src.Default.DefaultReader;
 public  class Input {
     private static Scanner scanner = new Scanner(System.in);
 
@@ -185,7 +186,7 @@ public  class Input {
         } else {
             System.out.println("Purchase failed.");
         }
-        Output.sleep(4000);
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
 
     }
 
@@ -204,7 +205,7 @@ public  class Input {
         Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
         if (hero.getInventory().getEntries().isEmpty()) {
             System.out.println("Inventory empty.");
-            Output.sleep(4000);
+            Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
             return;
         }
         System.out.println("Select item to sell:");
@@ -221,7 +222,7 @@ public  class Input {
         } else {
             System.out.println("Sale failed.");
         }
-        Output.sleep(4000);
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
     }
 
     public static int readInt(int min, int max) {
@@ -243,47 +244,17 @@ public  class Input {
 
     
     public static boolean getBattleInput(GameManager gm, Battle battle) {
-        boolean running = true;
-        String input;
-
-        while (true) {
-            input = scanner.nextLine().trim().toUpperCase();
-
-            if (!input.equals("A") &&  // Attack
-                !input.equals("S") &&  // Spell
-                !input.equals("P") &&  // Potion
-                !input.equals("E") &&  // Equip
-                !input.equals("I") &&  // Info
-                !input.equals("Q")) {  // Quit
-                System.out.println("Invalid input. Please try again.");
-            } else {
-                isGameExit(input); // Q
-                break;
-            }
-        }
-
-        if (input.equals("A")) {
-            battle.heroAttack();
-
-        } else if (input.equals("S")) {
-            battle.castSpell();
-
-        } else if (input.equals("P")) {
-            battle.usePotion();
-
-        } else if (input.equals("E")) {
-            battle.changeEquipment();
-
-        } else if (input.equals("I")) {
+        // Deprecated with per-hero turn system. Keep minimal support for 'I' and 'Q' to avoid breaking older flows.
+        String input = scanner.nextLine().trim().toUpperCase();
+        if (input.equals("I")) {
             battle.printInfo();
             waitForEnter();
-
-        } else if (input.equals("Q")) {
-
-            running = false;
+            return true;
         }
-
-        return running;
+        // Q will exit the game as per global convention
+        isGameExit(input);
+        // Any other input is ignored in this deprecated path
+        return true;
     }
 
     // Per-hero action prompt for the multi-hero turn system
@@ -307,13 +278,34 @@ public  class Input {
         }
     }
 
-    // Utility: pause and resume at the same context
     public static void waitForEnter() {
         System.out.print("\nPress Enter to continue...");
         try {
             String dummy = scanner.nextLine();
         } catch (Exception ignored) {}
     }
+
+    public static void inputNewGame() {
+        System.out.print("Do you want to start a new game? (Y/N), to exit press Q: ");
+        while (true) {
+            String raw = scanner.nextLine().trim().toUpperCase();
+            isGameExit(raw);
+            if (raw.equals("Y")) {
+                System.out.println("Starting a new game...");
+                Output.sleep(2000);
+                GameManager gm = new GameManager();
+                gm.start();
+                break;
+            } else if (raw.equals("N")) {
+                System.out.println("Exiting the game...");
+                System.exit(0);
+            } else {
+                System.out.print("Invalid input. Please enter Y (yes) or N (no), or Q to quit: ");
+            }
+        }
+
+    }
+
 
 
 
