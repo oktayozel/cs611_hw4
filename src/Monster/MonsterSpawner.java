@@ -16,15 +16,6 @@ public class MonsterSpawner{
     public MonsterSpawner(){
     }
     
-    static List<String> randomNameList = new ArrayList<>(
-        Arrays.asList("Inglorious","Flamebringer","Frostbite","Thunderclap","Earthshaker","Shadowfang","Lightbringer","Stormcaller","Doomhammer","Nightstalker",
-            "Bloodfang","Ironclad","Windrider","Stoneheart","Firestorm","Darkbane","Skybreaker","Grimshadow","Blazewing","Frostfang",
-            "Thunderstrike","Earthwarden","Shadowstrike","Lightweaver","Stormbringer","Doomreaver","Nightbane","Bloodreaper","Ironfang","Windwalker",
-            "Stonefist","Fireblade","Darkshadow","Skywarden","Grimfang","Blazefury","Frostwarden","Thunderfury","Earthshaker","Shadowflame",
-            "Lightbringer","Stormfury","Doomblade","Nightstalker","Bloodreaver","Ironfist","Windfury","Stonebreaker","Firestorm","Darkflame",
-            "Skystrike","Grimreaper","Blazewarden","Froststrike","Thunderwarden","Earthflame","Shadowreaper","Lightstrike","Stormwarden","Doomfury",
-            "Nightflame","Bloodstrike","Ironwarden","Windreaper","Stonefury","Fireflame","Darkreaper","Skyfury","Grimstrike","Blazebreaker",
-            "Frostreaper","Thunderbreaker","Earthfury","Shadowbreaker","Lightfury","Stormbreaker","Doomstrike","Nightbreaker","Bloodfury","Ironbreaker"));
 
 
     public static List<Monster> generateRandomMonsters(int count , int level){
