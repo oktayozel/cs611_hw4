@@ -29,32 +29,54 @@ public class MonsterSpawner{
 
     public static List<Monster> generateRandomMonsters(int count , int level){
         List<Monster> monsters = new ArrayList<>();
-        while( count > 0){
-            int monsterType = rand.nextInt(3);
+        while (count > 0) {
+            int monsterType = rand.nextInt(3); // 0 Dragons, 1 Exoskeletons, 2 Spirits
+            String typePlural = monsterType == 0 ? "Dragons" : monsterType == 1 ? "Exoskeletons" : "Spirits";
+            List<DefaultReader.MonsterTemplate> templates = DefaultReader.loadMonsterType(typePlural);
+            DefaultReader.MonsterTemplate chosen = null;
+            if (!templates.isEmpty()) {
+                // filter eligible by level <= party level
+                List<DefaultReader.MonsterTemplate> elig = new ArrayList<>();
+                for (DefaultReader.MonsterTemplate t : templates) {
+                    if (t.level <= level) elig.add(t);
+                }
+                if (elig.isEmpty()) elig = templates; // fallback
+                chosen = elig.get(rand.nextInt(elig.size()));
+            }
             Monster m;
-            if(monsterType == 0){
-                DefaultReader.MonsterStats base = DefaultReader.readMonster("Dragon");
-                int hp = base.HP * level;
-                int dmg = base.baseDamage * level;
-                int def = base.defense * level;
-                double dodge = Math.min(0.90, base.dodge + (level * 0.01));
-                m = new Dragon(randomNameList.get(rand.nextInt(randomNameList.size())) + "Dragon", level, hp, dmg, def, dodge);
-            }
-            else if(monsterType == 1){
-                DefaultReader.MonsterStats base = DefaultReader.readMonster("Exoskeleton");
-                int hp = base.HP * level;
-                int dmg = base.baseDamage * level;
-                int def = base.defense * level;
-                double dodge = Math.min(0.85, base.dodge + (level * 0.01));
-                m = new Exoskeleton(randomNameList.get(rand.nextInt(randomNameList.size())) + "Exoskeleton", level, hp, dmg, def, dodge);
-            }
-            else{
-                DefaultReader.MonsterStats base = DefaultReader.readMonster("Spirit");
-                int hp = base.HP * level;
-                int dmg = base.baseDamage * level;
-                int def = base.defense * level;
-                double dodge = Math.min(0.95, base.dodge + (level * 0.02));
-                m = new Spirit(randomNameList.get(rand.nextInt(randomNameList.size())) + "Spirit", level, hp, dmg, def, dodge);
+            if (monsterType == 0) {
+                if (chosen == null) {
+                    m = new Dragon("FallbackDragon", level, level * 100, 30, 20, 0.10);
+                } else {
+                    int hp = level * 100; // base scaling
+                    int dmg = chosen.baseDamage; // use template values directly
+                    int def = chosen.defense;
+                    double dodge = chosen.dodge;
+                    String name = randomNameList.get(rand.nextInt(randomNameList.size())) + chosen.name;
+                    m = new Dragon(name, level, hp, dmg, def, dodge);
+                }
+            } else if (monsterType == 1) {
+                if (chosen == null) {
+                    m = new Exoskeleton("FallbackExoskeleton", level, level * 100, 25, 25, 0.08);
+                } else {
+                    int hp = level * 100;
+                    int dmg = chosen.baseDamage;
+                    int def = chosen.defense;
+                    double dodge = chosen.dodge;
+                    String name = randomNameList.get(rand.nextInt(randomNameList.size())) + chosen.name;
+                    m = new Exoskeleton(name, level, hp, dmg, def, dodge);
+                }
+            } else {
+                if (chosen == null) {
+                    m = new Spirit("FallbackSpirit", level, level * 100, 20, 15, 0.12);
+                } else {
+                    int hp = level * 100;
+                    int dmg = chosen.baseDamage;
+                    int def = chosen.defense;
+                    double dodge = chosen.dodge;
+                    String name = randomNameList.get(rand.nextInt(randomNameList.size())) + chosen.name;
+                    m = new Spirit(name, level, hp, dmg, def, dodge);
+                }
             }
             monsters.add(m);
             count--;

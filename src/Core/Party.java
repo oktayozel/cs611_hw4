@@ -1,27 +1,24 @@
 package src.Core;
-
 import src.Hero.Hero;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import src.Hero.Paladin;   
 import src.Hero.Sorcerer;
 import src.Hero.Warrior;
 import src.Inventory.Inventory;
-import src.Hero.Hero;
 import src.Default.DefaultReader;
-
-import IO.Input;
+import src.IO.Input;
 
 public class Party {
 
-    private List<Hero> heroes;   // 1–3 heroes
+    private List<Hero> heroes;   // list that holds the heroes in the party
 
+    // general constructor
     public Party() {
         this.heroes = new ArrayList<>();
     }
 
+    // adds a hero to the party
     public void addHero(Hero hero) {
         if (heroes.size() >= 3) {
             System.out.println("Party is full (max 3 heroes).");
@@ -30,13 +27,17 @@ public class Party {
         heroes.add(hero);
     }
 
+    // getter for heroes
     public List<Hero> getHeroes() {
         return heroes;
     }
 
+    // returns the number of heroes in the party
     public int size() {
         return heroes.size();
     }
+
+    // returns the average level of the heroes in the party
     public int getAverageLevel() {
         if (heroes.isEmpty()) {
             return 0;
@@ -50,28 +51,30 @@ public class Party {
 
 
 
-    public void printPartyInfo() {
-        System.out.println("===== PARTY =====");
-        for (Hero h : heroes) {
-            IO.Output.displayHeroFullInfo(h);
-        }
-        System.out.println("=================");
-    }
+
 
     public void initializeParty(int partySize) {
         for (int i = 1; i <= partySize; i++) {
-            String romenNumber = (i==1?"I": i==2?"II":"III");
+            String romanNumber = (i==1?"I": i==2?"II":"III");
             int heroNumber = Input.getHeroName(i);
-            String heroClass = heroNumber == 1 ? "Warrior" : heroNumber == 2 ? "Sorcerer" : "Paladin";
-            DefaultReader.HeroStats stats = DefaultReader.readHero(heroClass);
+            String classPlural = heroNumber == 1 ? "Warriors" : heroNumber == 2 ? "Sorcerers" : "Paladins";
+            List<DefaultReader.HeroTemplate> templates = DefaultReader.loadHeroClass(classPlural);
+            DefaultReader.HeroTemplate chosen = templates.isEmpty() ? null : templates.get((i-1) % templates.size()); // deterministic pick
+            // fallback if file missing
+            if (chosen == null) {
+                chosen = new DefaultReader.HeroTemplate();
+                chosen.name = classPlural.substring(0, classPlural.length()-1) + "_Default"; // Warrior_Default etc.
+                chosen.MP = 50; chosen.strength = 20; chosen.dexterity = 15; chosen.agility = 10; chosen.gold = 100; chosen.startingExp = 0; chosen.level = 1; chosen.HP = 100;
+            }
             Inventory inv = new Inventory();
             Hero hero;
-            if ("Warrior".equals(heroClass)) {
-                hero = new Warrior("Warrior " + romenNumber, stats.level, stats.HP, stats.MP, stats.strength, stats.dexterity, stats.agility, stats.gold, inv);
-            } else if ("Sorcerer".equals(heroClass)) {
-                hero = new Sorcerer("Sorcerer " + romenNumber, stats.level, stats.HP, stats.MP, stats.strength, stats.dexterity, stats.agility, stats.gold, inv);
+            // create hero with stats from template
+            if ("Warriors".equals(classPlural)) {
+                hero = new Warrior(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+            } else if ("Sorcerers".equals(classPlural)) {
+                hero = new Sorcerer(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
             } else {
-                hero = new Paladin("Paladin " + romenNumber, stats.level, stats.HP, stats.MP, stats.strength, stats.dexterity, stats.agility, stats.gold, inv);
+                hero = new Paladin(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
             }
             addHero(hero);
         }

@@ -1,8 +1,0 @@
-level: 1
-HP: 100
-MP: 30
-strength: 15
-dexterity: 25
-agility: 20
-gold: 100
-inventory: 1

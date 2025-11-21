@@ -20,6 +20,8 @@ public class Hero {
     private Weapon equippedWeapon;  // if the hero has equipped a weapon
     private Armor equippedArmor;   // if the hero has equipped an armor
 
+
+    // general constructor
     public Hero(String name, int level, int HP, int MP, int strength, int dexterity, int agility, int gold, Inventory inventory) {
         this.name = name;
         this.level = level;
@@ -36,28 +38,39 @@ public class Hero {
     }
 
 
+    // adds gold
+    public void addGold(int amount) { 
+        if (amount > 0) this.gold += amount; 
+    }
 
-
-
-    // Gold helpers
-    public void addGold(int amount) { if (amount > 0) this.gold += amount; }
+    // decreases gold if possible if not enough gold, return false
     public boolean spendGold(int amount) {
         if (amount <= 0) return true;
         if (amount > gold) return false;
         gold -= amount; return true;
     }
-    public void setGold(int gold) { this.gold = Math.max(0, gold); }
+    // direct setter for gold
+    public void setGold(int gold) { 
+        this.gold = Math.max(0, gold); 
+    }
 
     // Experience helpers
-    
-    public void addExperience(int xp) { if (xp > 0) this.experience += xp; }
-    public void setExperience(int xp) { this.experience = Math.max(0, xp); }
+    public void addExperience(int xp) { 
+        if (xp > 0) this.experience += xp;
+    }
+    public void setExperience(int xp) { 
+        this.experience = Math.max(0, xp); 
+    }
 
 
+
+
+
+    // function to embed dodge chance
     public double getDodgeChance() {
-        double chance = agility * 0.002; // spec: agility * 0.002
+        double chance = agility * 0.002; 
         if (chance < 0) chance = 0;
-        if (chance > 0.6) chance = 0.6; // optional safety cap
+        if (chance > 0.6) chance = 0.6;
         return chance;
     }
 
@@ -77,16 +90,28 @@ public class Hero {
         if (HP < 0) HP = 0;
     }
 
+
+    // am i dead
     public boolean isFainted() { return HP <= 0; }
 
-    public void healHP(int amount) { if (amount > 0) HP += amount; }
+    // increase HP
+    public void healHP(int amount) { 
+        if (amount > 0) HP += amount; 
+    }
+
+    // decrease MP
     public boolean spendMP(int amount) {
         if (amount < 0) return false;
         if (MP < amount) return false;
         MP -= amount; return true;
     }
-    public void restoreMP(int amount) { if (amount > 0) MP += amount; }
 
+    // increase MP
+    public void restoreMP(int amount) {
+         if (amount > 0) MP += amount; 
+    }
+
+    // if not dead, increase 10% HP and MP after each round
     public void regenAfterRound() {
         if (!isFainted()) {
             HP = (int)Math.round(HP * 1.1);
@@ -94,6 +119,7 @@ public class Hero {
         }
     }
 
+    
     public void reviveHalf() {
         if (isFainted()) {
             int baseHP = Math.max(1, level * 100);
@@ -194,6 +220,73 @@ public class Hero {
     }
     public void setEquippedArmor(Armor armor) { 
         this.equippedArmor = armor; 
+    }
+
+    // Get list of weapons from inventory
+    public java.util.List<Weapon> getAvailableWeapons() {
+        java.util.List<Weapon> weapons = new java.util.ArrayList<>();
+        for (src.Inventory.InventoryEntry entry : inventory.getEntries()) {
+            if (entry.getItem() instanceof Weapon) {
+                weapons.add((Weapon) entry.getItem());
+            }
+        }
+        return weapons;
+    }
+
+    // Get list of armor from inventory
+    public java.util.List<Armor> getAvailableArmor() {
+        java.util.List<Armor> armors = new java.util.ArrayList<>();
+        for (src.Inventory.InventoryEntry entry : inventory.getEntries()) {
+            if (entry.getItem() instanceof Armor) {
+                armors.add((Armor) entry.getItem());
+            }
+        }
+        return armors;
+    }
+
+    // Get list of potions from inventory
+    public java.util.List<Potion> getAvailablePotions() {
+        java.util.List<Potion> potions = new java.util.ArrayList<>();
+        for (src.Inventory.InventoryEntry entry : inventory.getEntries()) {
+            if (entry.getItem() instanceof Potion) {
+                potions.add((Potion) entry.getItem());
+            }
+        }
+        return potions;
+    }
+
+    // Equip a weapon from inventory
+    public boolean equipWeaponByIndex(int index) {
+        java.util.List<Weapon> weapons = getAvailableWeapons();
+        if (index < 0 || index >= weapons.size()) return false;
+        this.equippedWeapon = weapons.get(index);
+        return true;
+    }
+
+    // Equip armor from inventory
+    public boolean equipArmorByIndex(int index) {
+        java.util.List<Armor> armors = getAvailableArmor();
+        if (index < 0 || index >= armors.size()) return false;
+        this.equippedArmor = armors.get(index);
+        return true;
+    }
+
+    // Use a potion and consume it from inventory
+    public boolean usePotionByIndex(int index) {
+        java.util.List<Potion> potions = getAvailablePotions();
+        if (index < 0 || index >= potions.size()) return false;
+        Potion potion = potions.get(index);
+        applyPotion(potion);
+        
+        // Remove one from inventory
+        src.Inventory.InventoryEntry entry = inventory.getEntryByName(potion.getName());
+        if (entry != null) {
+            entry.decreaseQuantity(1);
+            if (entry.getQuantity() <= 0) {
+                inventory.removeItemByName(potion.getName());
+            }
+        }
+        return true;
     }
 
     @Override

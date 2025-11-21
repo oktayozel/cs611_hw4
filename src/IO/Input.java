@@ -24,6 +24,7 @@ public  class Input {
     }
 
     public static String getUsername(){
+        Output.print("Enter your name: "); 
         String name = scanner.nextLine();
         isGameExit(name);
         return name;
@@ -51,7 +52,7 @@ public  class Input {
     }
 
     public static int getHeroName(int heroIndex){
-        System.out.print("Select your "+ heroIndex + " hero ");
+        System.out.print("Select your hero "+ heroIndex);
         System.out.print("(1: Warrior, 2: Sorcerer, 3: Paladin): ");
         return readInt(1, 3);
     }
@@ -66,6 +67,7 @@ public  class Input {
             !input.equals("S") &&
             !input.equals("D") &&
             !input.equals("I") &&
+            !input.equals("C") &&
             !input.equals("M") &&
             !input.equals("Q")) {
             
@@ -98,13 +100,20 @@ public  class Input {
             }
 
         } else if (input.equals("I")) {
-            gm.getUser().getParty().printPartyInfo();
-            waitForEnter();
+            // Show info AND open inventory management
+            getPartyInfoInput(gm);
+
+        } else if (input.equals("C")) {
+            getPartyInfoInput(gm);
 
         } else if (input.equals("M")) {
             gm.tryEnterMarket();
 
-        } else if (input.equals("Q")) {
+        } else if (input.equals("H")) {
+            Output.displayInstructions();
+            waitForEnter();
+        }
+        else if (input.equals("Q")) {
             running = false;
 
         } else {
@@ -130,8 +139,8 @@ public  class Input {
                 handleSell(market, user);
                 return true;
             case "I":
-                // Show full party info while staying in market
-                user.getParty().printPartyInfo();
+                // In market, just show info without full inventory menu
+                Output.printPartyInfo(user.getParty());
                 waitForEnter();
                 return true;
             case "E":
@@ -141,6 +150,167 @@ public  class Input {
             default:
                 return true;
         }
+    }
+
+    private static void getPartyInfoInput(GameManager gm) {
+        if (gm.getUser().getParty().getHeroes().isEmpty()) {
+            System.out.println("No heroes in party.");
+            return;
+        }
+
+        while (true) {
+            // First show party info
+            Output.printPartyInfo(gm.getUser().getParty());
+            
+            System.out.println("\n===== INVENTORY MENU =====");
+            System.out.println("Select a hero to manage:");
+            for (int i = 0; i < gm.getUser().getParty().getHeroes().size(); i++) {
+                Hero h = gm.getUser().getParty().getHeroes().get(i);
+                System.out.println("(" + (i + 1) + ") " + h.getName() + " [Level: " + h.getLevel() + ", HP: " + h.getHP() + ", MP: " + h.getMP() + "]");
+            }
+            System.out.println("(E) Exit inventory");
+            System.out.println("(Q) Quit game");
+            System.out.print("Your choice: ");
+
+            String input = scanner.nextLine().trim().toUpperCase();
+            isGameExit(input);
+
+            if (input.equals("E")) {
+                return; // Exit inventory
+            }
+
+            try {
+                int heroIdx = Integer.parseInt(input);
+                if (heroIdx >= 1 && heroIdx <= gm.getUser().getParty().getHeroes().size()) {
+                    Hero hero = gm.getUser().getParty().getHeroes().get(heroIdx - 1);
+                    handleHeroInventory(hero);
+                } else {
+                    System.out.println("Invalid hero number.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a hero number, E to exit, or Q to quit.");
+            }
+        }
+    }
+
+    private static void handleHeroInventory(Hero hero) {
+        while (true) {
+            System.out.println("\n===== " + hero.getName() + "'s Inventory =====");
+            System.out.println("(1) Equip Weapon");
+            System.out.println("(2) Equip Armor");
+            System.out.println("(3) Use Potion");
+            System.out.println("(4) View Full Info");
+            System.out.println("(E) Back to hero selection");
+            System.out.println("(Q) Quit game");
+            System.out.print("Your choice: ");
+
+            String input = scanner.nextLine().trim().toUpperCase();
+            isGameExit(input);
+
+            if (input.equals("E")) {
+                return; // Back to hero selection
+            }
+
+            switch (input) {
+                case "1":
+                    equipWeapon(hero);
+                    break;
+                case "2":
+                    equipArmor(hero);
+                    break;
+                case "3":
+                    usePotion(hero);
+                    break;
+                case "4":
+                    Output.displayHeroFullInfo(hero);
+                    waitForEnter();
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private static void equipWeapon(Hero hero) {
+        java.util.List<src.Item.Weapon> weapons = hero.getAvailableWeapons();
+        
+        if (weapons.isEmpty()) {
+            System.out.println("No weapons in inventory.");
+            Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+            return;
+        }
+
+        System.out.println("\n--- Available Weapons ---");
+        for (int i = 0; i < weapons.size(); i++) {
+            src.Item.Weapon w = weapons.get(i);
+            String equipped = (hero.getEquippedWeapon() != null && hero.getEquippedWeapon().getName().equals(w.getName())) ? " [EQUIPPED]" : "";
+            System.out.println("(" + (i + 1) + ") " + w.getName() + " - Damage: " + w.getDamage() + ", Hands: " + w.getHands() + equipped);
+        }
+        System.out.println("(0) Cancel");
+        System.out.print("Select weapon to equip: ");
+
+        int choice = readInt(0, weapons.size());
+        if (choice == 0) return;
+
+        if (hero.equipWeaponByIndex(choice - 1)) {
+            System.out.println(hero.getName() + " equipped " + weapons.get(choice - 1).getName() + "!");
+        }
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+    }
+
+    private static void equipArmor(Hero hero) {
+        java.util.List<src.Item.Armor> armors = hero.getAvailableArmor();
+        
+        if (armors.isEmpty()) {
+            System.out.println("No armor in inventory.");
+            Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+            return;
+        }
+
+        System.out.println("\n--- Available Armor ---");
+        for (int i = 0; i < armors.size(); i++) {
+            src.Item.Armor a = armors.get(i);
+            String equipped = (hero.getEquippedArmor() != null && hero.getEquippedArmor().getName().equals(a.getName())) ? " [EQUIPPED]" : "";
+            System.out.println("(" + (i + 1) + ") " + a.getName() + " - Reduction: " + a.getDamageReduction() + equipped);
+        }
+        System.out.println("(0) Cancel");
+        System.out.print("Select armor to equip: ");
+
+        int choice = readInt(0, armors.size());
+        if (choice == 0) return;
+
+        if (hero.equipArmorByIndex(choice - 1)) {
+            System.out.println(hero.getName() + " equipped " + armors.get(choice - 1).getName() + "!");
+        }
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+    }
+
+    private static void usePotion(Hero hero) {
+        java.util.List<src.Item.Potion> potions = hero.getAvailablePotions();
+        
+        if (potions.isEmpty()) {
+            System.out.println("No potions in inventory.");
+            Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+            return;
+        }
+
+        System.out.println("\n--- Available Potions ---");
+        for (int i = 0; i < potions.size(); i++) {
+            src.Item.Potion p = potions.get(i);
+            InventoryEntry entry = hero.getInventory().getEntryByName(p.getName());
+            int quantity = (entry != null) ? entry.getQuantity() : 0;
+            System.out.println("(" + (i + 1) + ") " + p.getName() + " - " + p.getEffectType() + " +" + p.getEffectAmount() + " (x" + quantity + ")");
+        }
+        System.out.println("(0) Cancel");
+        System.out.print("Select potion to use: ");
+
+        int choice = readInt(0, potions.size());
+        if (choice == 0) return;
+
+        if (hero.usePotionByIndex(choice - 1)) {
+            System.out.println(hero.getName() + " used " + potions.get(choice - 1).getName() + "!");
+        }
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
     }
 
     private static void handleBuy(Market market, User user) {

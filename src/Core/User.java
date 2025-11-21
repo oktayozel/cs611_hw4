@@ -1,5 +1,7 @@
 package src.Core;
 
+
+// the class that represents a user in the game
 public class User {
 
     private String name;
@@ -7,6 +9,7 @@ public class User {
     private boolean inMarket;
     private boolean inBattle;
 
+    // constructor
     public User(String name) {
         this.name = name;
         this.party = new Party();
@@ -14,12 +17,8 @@ public class User {
         this.inBattle = false;
     }
 
-    public String getName() {
-        return name;
-    }
-    public Party getParty() {
-        return party;
-    }
+
+    // to control whether user in main loop or in other places
     public boolean isInMarket() {
         return inMarket;
     }
@@ -32,5 +31,14 @@ public class User {
     public void setInBattle(boolean inBattle) {
         this.inBattle = inBattle;
     }   
+
+    // getters
+    public String getName() {
+        return name;
+    }
+    public Party getParty() {
+        return party;
+    }
+
 
 }

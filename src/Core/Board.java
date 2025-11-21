@@ -2,7 +2,7 @@ package src.Core;
 
 import java.util.Random;
 
-import IO.Output;
+import src.IO.Output;
 import src.Default.DefaultReader;
 
 // represents the game board
@@ -26,14 +26,10 @@ public class Board {
         return row >= 0 && row < size && col >= 0 && col < size;
     }
 
-    // returns the size of the board
-    public int getSize() {
-        return size;
-    }
-    // return the tile at the given coordinates
-    public Tile getTile(int row, int col) {
-        if (!isInside(row, col)) return null;
-        return grid[row][col];
+
+    // checking if the P has space to move which is same as checking 0,1 and 1,0 are not X.
+    public boolean isBoardPlayable(){
+        return grid[0][1].isAccessible() || grid[1][0].isAccessible();
     }
 
     // generetes a random layout for the board based on default settings
@@ -54,7 +50,7 @@ public class Board {
         }
     }
 
-    // prints the board to the console, having it here simplifies the code in Output.java however it can be moved there if needed
+    // prints the board to the console, having it here simplifies the code in Output.java however it can be moved there if needed which is a better practice
     public void printBoard(int partyRow, int partyCol) {
         Output.clearScreen();
         Output.boardBanner();
@@ -77,9 +73,16 @@ public class Board {
         }
         System.out.println("+");
     }
-
-    // checking if the P has space to move which is same as chechin 0,1 and 1,0 are not X.
-    public boolean isBoardPlayable(){
-        return grid[0][1].isAccessible() || grid[1][0].isAccessible();
+    // getters 
+    // returns the size of the board
+    public int getSize() {
+        return size;
     }
+    // return the tile at the given coordinates
+    public Tile getTile(int row, int col) {
+        if (!isInside(row, col)) return null;
+        return grid[row][col];
+    }
+
+
 }

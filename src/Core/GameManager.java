@@ -1,8 +1,7 @@
 package src.Core;
 
-import java.util.Scanner;
-import IO.Output;
-import IO.Input;
+import src.IO.Output;
+import src.IO.Input;
 import src.Battle;
 import java.util.Random;
 import src.Default.DefaultReader;
@@ -16,24 +15,27 @@ public class GameManager {
     private Board board;
     private Piece partyPiece;   
     private User user;
-    private int partySize;
     
+    // constructor 
     public GameManager() {
         setupGame();
     }
 
+
     // sets up the game by initializing user, party, and board
     private void setupGame() {
-        Output.gameInitialization(); // start banner
+        Output.gameInitializationMessage(); // shows the initial banner
         Output.someSpace(); // spacing
-        Output.print("Enter your name: "); // get username
-        String name = Input.getUsername();
-        this.user = new User(name);
-        int partySize = Input.getPartySize();
-        this.user.getParty().initializeParty(partySize);
+
+        String name = Input.getUsername(); // get username 
+
+        this.user = new User(name); // create new user
+
+        int partySize = Input.getPartySize(); // get party size
+        this.user.getParty().initializeParty(partySize); // initialize party with size
 
 
-        // generate a new board until it's playable
+        // generate a new board until it is playable
         this.board = new Board(DefaultReader.getDefaultSettings("board_size"));
         while(!board.isBoardPlayable()){
             this.board = new Board(DefaultReader.getDefaultSettings("board_size"));
@@ -41,7 +43,8 @@ public class GameManager {
 
 
         // this part finds the first accessible tile for placing the party
-        int startRow = 0;
+
+        int startRow = 0; 
         int startCol = 0;
         boolean found = false;
         for (int r = 0; r < board.getSize() && !found; r++) {
@@ -54,14 +57,15 @@ public class GameManager {
                 }
             }
         }
-        // place the party on the found tile
 
+        // place the party on the found tile
         this.partyPiece = new Piece(startRow, startCol);
     }
 
 
     // starts the main game loop
     public void start() {
+
         Output.displaySecondWelcomeMessage(user);
         
         // main game loop
@@ -74,7 +78,7 @@ public class GameManager {
                 running = Input.getInput(this);
             }
         }
-        
+        // game ended print thank you message
         Output.print("Thanks for playing!");
     }
 
@@ -86,7 +90,7 @@ public class GameManager {
 
         if (tile.isCommon()) {
             int encounterChance = rand.nextInt(100);
-            if (encounterChance < DefaultReader.getDefaultSettings("battle_chance")) {  // %20 chance to battle
+            if (encounterChance < DefaultReader.getDefaultSettings("battle_probability_percent")) {  // battle probability from settings
                 Output.narrative("OH NO! Monsters here! Battle starts now!");
                 user.setInBattle(true);
                 Battle battle = new Battle(this);
@@ -98,22 +102,21 @@ public class GameManager {
         }
     }
 
+    // tries to enter market if party is on a market tile
     public void tryEnterMarket() {
         Tile tile = board.getTile(partyPiece.getRow(), partyPiece.getCol());
         if (tile != null && tile.isMarket()) {
             
             user.setInMarket(true);
             tile.getMarket().start(user);
-            
-
-
-        } else {
+        } 
+        else {
             Output.narrative("You are not standing on a market tile.");
         }
     }
 
 
-
+    // getters
     public Board getBoard() {
         return board;
     }

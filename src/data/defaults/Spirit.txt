@@ -1,5 +1,0 @@
-level: 1
-HP: 100
-baseDamage: 15
-defense: 15
-dodge: 30

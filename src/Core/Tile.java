@@ -2,8 +2,11 @@ package src.Core;
 
 import src.Market.Market; 
 
+// the Tile class represents each tile on the board
 public class Tile {
 
+
+    // 3 types of tiles
     public enum Type {
         INACCESSIBLE,
         MARKET,
@@ -15,6 +18,7 @@ public class Tile {
     private final Type type;
     private final Market market;  
 
+    // constructor
     public Tile(int row, int col, Type type) {
         this.row = row;
         this.col = col;
@@ -22,6 +26,20 @@ public class Tile {
         this.market = (type == Type.MARKET) ? new Market() : null;
     }
 
+    // helpers
+    public boolean isAccessible() {
+        return type != Type.INACCESSIBLE;
+    }
+
+    public boolean isMarket() {
+        return type == Type.MARKET;
+    }
+
+    public boolean isCommon() {
+        return type == Type.COMMON;
+    }
+
+    // getters
     public int getRow() {
         return row;
     }
@@ -34,17 +52,6 @@ public class Tile {
         return type;
     }
 
-    public boolean isAccessible() {
-        return type != Type.INACCESSIBLE;
-    }
-
-    public boolean isMarket() {
-        return type == Type.MARKET;
-    }
-
-    public boolean isCommon() {
-        return type == Type.COMMON;
-    }
     public Market getMarket() {
         if (isMarket()) {
             return market;

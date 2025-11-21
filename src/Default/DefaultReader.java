@@ -4,79 +4,82 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
+
+/**
+ * the class to read the default data that are in the blackboard with an addition of settings
+ */
 public class DefaultReader {
-    private static final String DIR = "src/data/defaults";
 
-    public static class HeroStats {
-        public int level, HP, MP, strength, dexterity, agility, gold;
-    }
-    public static class MonsterStats {
-        public int level, HP, baseDamage, defense; public double dodge; // 0..1
-    }
+    private static final String DEFAULTS_DIR = "src/data/new_defaults"; // list-based data here
+    private static final Random RAND = new Random();
 
-
-    public static HeroStats readHero(String heroClass) {
-        String fileName = heroClass + ".txt"; // Warrior.txt etc.
-        File f = new File(DIR, fileName);
-        HeroStats hs = new HeroStats();
-        // defaults if file missing
-        hs.level = 1; hs.HP = 100; hs.MP = 50; hs.strength = 20; hs.dexterity = 15; hs.agility = 10; hs.gold = 100;
-        if (!f.exists()) return hs;
-        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) continue;
-                int idx = line.indexOf(':');
-                if (idx == -1) continue;
-                String k = line.substring(0, idx).trim();
-                String v = line.substring(idx + 1).trim();
-                int val;
-                try { val = Integer.parseInt(v); } catch (NumberFormatException e) { continue; }
-                if (k.equalsIgnoreCase("level")) hs.level = val;
-                else if (k.equalsIgnoreCase("HP")) hs.HP = val;
-                else if (k.equalsIgnoreCase("MP")) hs.MP = val;
-                else if (k.equalsIgnoreCase("strength")) hs.strength = val;
-                else if (k.equalsIgnoreCase("dexterity")) hs.dexterity = val;
-                else if (k.equalsIgnoreCase("agility")) hs.agility = val;
-                else if (k.equalsIgnoreCase("gold")) hs.gold = val;
-            }
-        } catch (IOException ignored) {}
-        return hs;
+    // template for the hero txts
+    public static class HeroTemplate {
+        public String name;
+        public int level; 
+        public int HP; 
+        public int MP; 
+        public int strength; 
+        public int dexterity; 
+        public int agility; 
+        public int gold; 
+        public int startingExp;
     }
 
-    public static MonsterStats readMonster(String type) {
-        String fileName = type + ".txt"; // Dragon.txt etc.
-        File f = new File(DIR, fileName);
-        MonsterStats ms = new MonsterStats();
-        ms.level = 1; ms.HP = 100; ms.baseDamage = 30; ms.defense = 20; ms.dodge = 0.10; // defaults
-        if (!f.exists()) return ms;
-        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) continue;
-                int idx = line.indexOf(':');
-                if (idx == -1) continue;
-                String k = line.substring(0, idx).trim();
-                String v = line.substring(idx + 1).trim();
-                try {
-                    if (k.equalsIgnoreCase("level")) ms.level = Integer.parseInt(v);
-                    else if (k.equalsIgnoreCase("HP")) ms.HP = Integer.parseInt(v);
-                    else if (k.equalsIgnoreCase("baseDamage")) ms.baseDamage = Integer.parseInt(v);
-                    else if (k.equalsIgnoreCase("defense")) ms.defense = Integer.parseInt(v);
-                    else if (k.equalsIgnoreCase("dodge")) ms.dodge = Integer.parseInt(v) / 100.0; // convert percent
-                } catch (NumberFormatException ignored) {}
-            }
-        } catch (IOException ignored) {}
-        return ms;
+    // template for the monster txts
+    public static class MonsterTemplate {
+        public String name; 
+        public int level; 
+        public int HP; 
+        public int baseDamage; 
+        public int defense; 
+        public double dodge; 
+    }
+    // template for the weapon txts
+    public static class WeaponTemplate { 
+        public String name; 
+        public int cost; 
+        public int level; 
+        public int damage; 
+        public int hands; 
     }
 
+    // template for the armor txts
+    public static class ArmorTemplate { 
+        public String name; 
+        public int cost; 
+        public int level; 
+        public int reduction; 
+    }
+
+    // template for the potion txts
+    public static class PotionTemplate { 
+        public String name; 
+        public int cost; 
+        public int level; 
+        public int increase; 
+        public String affected; 
+    }
+
+    // template for the spell txts
+    public static class SpellTemplate { 
+        public String name; 
+        public int cost; 
+        public int level; 
+        public int damage; 
+        public int manaCost; 
+        public String type; 
+    }
+
+
+    // getter for the settings
     public static int getDefaultSettings(String key){
-        String fileName =  "Settings.txt"; // Settings.txt
-        File f = new File(DIR, fileName);
-
+        File f = new File(DEFAULTS_DIR, "Settings.txt");
+        if (!f.exists()) return -1;
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -86,13 +89,175 @@ public class DefaultReader {
                 if (idx == -1) continue;
                 String k = line.substring(0, idx).trim();
                 String v = line.substring(idx + 1).trim();
-                try {
-                    if (k.equalsIgnoreCase(key)) return Integer.parseInt(v);
-                } catch (NumberFormatException ignored) {}
+                if (k.equalsIgnoreCase(key)) {
+                    v = v.replace("%"," ").trim();
+                    try { return Integer.parseInt(v); } catch (NumberFormatException ignored) { return -1; }
+                }
             }
         } catch (IOException ignored) {}
         return -1;
     }
-    
+
+    // getter for hero class
+    public static List<HeroTemplate> loadHeroClass(String classPlural){
+        File f = new File(DEFAULTS_DIR, classPlural + ".txt");
+        List<HeroTemplate> list = new ArrayList<>();
+        if (!f.exists()) return list;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String line; boolean headerSkipped = false;
+            while((line = br.readLine()) != null){
+                line = line.trim();
+                if (line.isEmpty()) continue;
+                if (!headerSkipped){ 
+                    headerSkipped = true; continue;
+                }
+                String[] parts = line.split("\\s+");
+                if (parts.length < 7) continue;
+                HeroTemplate ht = new HeroTemplate();
+                ht.name = parts[0];
+                ht.MP = parseInt(parts[1], 50);
+                ht.strength = parseInt(parts[2], 20);
+                ht.agility = parseInt(parts[3], 10);
+                ht.dexterity = parseInt(parts[4], 15);
+                ht.gold = parseInt(parts[5], 100);
+                ht.startingExp = parseInt(parts[6], 0);
+                ht.level = 1; ht.HP = 100;
+                list.add(ht);
+            }
+        } catch(IOException ignored){}
+        return list;
+    }
+
+    // returns a random hero template of the given type of the class
+    public static HeroTemplate getRandomHero(String classPlural){
+        List<HeroTemplate> list = loadHeroClass(classPlural);
+        if (list.isEmpty()) return null;
+        return list.get(RAND.nextInt(list.size()));
+    }
+
+    // -------- MONSTER LISTS --------
+    public static List<MonsterTemplate> loadMonsterType(String typePlural){
+        File f = new File(DEFAULTS_DIR, typePlural + ".txt");
+        List<MonsterTemplate> list = new ArrayList<>();
+        if (!f.exists()) return list;
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String line; boolean headerSkipped = false;
+            while((line = br.readLine()) != null){
+                line = line.trim();
+                if (line.isEmpty()) continue;
+                if (!headerSkipped){ headerSkipped = true; continue; }
+                String[] parts = line.split("\\s+");
+                if (parts.length < 5) continue;
+                MonsterTemplate mt = new MonsterTemplate();
+                mt.name = parts[0];
+                mt.level = parseInt(parts[1], 1);
+                mt.baseDamage = parseInt(parts[2], 100);
+                mt.defense = parseInt(parts[3], 100);
+                int dodgePct = parseInt(parts[4], 10);
+                mt.dodge = dodgePct / 100.0;
+                mt.HP = mt.level * 100; // per spec
+                list.add(mt);
+            }
+        } catch(IOException ignored){}
+        return list;
+    }
+    public static MonsterTemplate getRandomMonster(String typePlural){
+        List<MonsterTemplate> list = loadMonsterType(typePlural);
+        if (list.isEmpty()) return null;
+        return list.get(RAND.nextInt(list.size()));
+    }
+
+    // -------- WEAPONS --------
+    public static List<WeaponTemplate> loadWeapons(){
+        return parseWeaponFile("Weaponry.txt");
+    }
+    private static List<WeaponTemplate> parseWeaponFile(String file){
+        List<WeaponTemplate> list = new ArrayList<>();
+        File f = new File(DEFAULTS_DIR, file);
+        if (!f.exists()) return list;
+        try(BufferedReader br = new BufferedReader(new FileReader(f))){
+            String line; boolean headerSkipped=false;
+            while((line=br.readLine())!=null){
+                line=line.trim(); if(line.isEmpty()) continue;
+                if(!headerSkipped){ headerSkipped=true; continue; }
+                String[] p=line.split("\\s+"); if(p.length<5) continue;
+                WeaponTemplate wt=new WeaponTemplate();
+                wt.name=p[0]; wt.cost=parseInt(p[1],0); wt.level=parseInt(p[2],1); wt.damage=parseInt(p[3],0); wt.hands=parseInt(p[4],1);
+                list.add(wt);
+            }
+        }catch(IOException ignored){}
+        return list;
+    }
+
+    // -------- ARMOR --------
+    public static List<ArmorTemplate> loadArmor(){
+        List<ArmorTemplate> list = new ArrayList<>();
+        File f = new File(DEFAULTS_DIR, "Armory.txt");
+        if(!f.exists()) return list;
+        try(BufferedReader br=new BufferedReader(new FileReader(f))){
+            String line; boolean headerSkipped=false;
+            while((line=br.readLine())!=null){
+                line=line.trim(); if(line.isEmpty()) continue;
+                if(!headerSkipped){ headerSkipped=true; continue; }
+                String[] p=line.split("\\s+"); if(p.length<4) continue;
+                ArmorTemplate at=new ArmorTemplate();
+                at.name=p[0]; at.cost=parseInt(p[1],0); at.level=parseInt(p[2],1); at.reduction=parseInt(p[3],0);
+                list.add(at);
+            }
+        }catch(IOException ignored){}
+        return list;
+    }
+
+    // -------- POTIONS --------
+    public static List<PotionTemplate> loadPotions(){
+        List<PotionTemplate> list=new ArrayList<>();
+        File f=new File(DEFAULTS_DIR,"Potions.txt");
+        if(!f.exists()) return list;
+        try(BufferedReader br=new BufferedReader(new FileReader(f))){
+            String line; boolean headerSkipped=false;
+            while((line=br.readLine())!=null){
+                line=line.trim(); if(line.isEmpty()) continue;
+                if(!headerSkipped){ headerSkipped=true; continue; }
+                String[] p=line.split("\\s+"); if(p.length<5) continue;
+                PotionTemplate pt=new PotionTemplate();
+                pt.name=p[0]; pt.cost=parseInt(p[1],0); pt.level=parseInt(p[2],1); pt.increase=parseInt(p[3],0);
+                // attribute affected may contain slashes => rebuild from remaining tokens
+                StringBuilder sb=new StringBuilder();
+                for(int i=4;i<p.length;i++){ if(i>4) sb.append(' '); sb.append(p[i]); }
+                pt.affected=sb.toString();
+                list.add(pt);
+            }
+        }catch(IOException ignored){}
+        return list;
+    }
+
+    // -------- SPELLS --------
+    public static List<SpellTemplate> loadSpells(){
+        List<SpellTemplate> all=new ArrayList<>();
+        parseSpellFile("FireSpells.txt","Fire",all);
+        parseSpellFile("IceSpells.txt","Ice",all);
+        parseSpellFile("LightningSpells.txt","Lightning",all);
+        return all;
+    }
+    private static void parseSpellFile(String file, String type, List<SpellTemplate> out){
+        File f=new File(NEW_DEFAULTS_DIR,file);
+        if(!f.exists()) return;
+        try(BufferedReader br=new BufferedReader(new FileReader(f))){
+            String line; boolean headerSkipped=false;
+            while((line=br.readLine())!=null){
+                line=line.trim(); if(line.isEmpty()) continue;
+                if(!headerSkipped){ headerSkipped=true; continue; }
+                String[] p=line.split("\\s+"); if(p.length<5) continue;
+                SpellTemplate st=new SpellTemplate();
+                st.name=p[0]; st.cost=parseInt(p[1],0); st.level=parseInt(p[2],1); st.damage=parseInt(p[3],0); st.manaCost=parseInt(p[4],0); st.type=type;
+                out.add(st);
+            }
+        }catch(IOException ignored){}
+    }
+
+    // Utility
+    private static int parseInt(String s, int def){
+        try { return Integer.parseInt(s); } catch (Exception e){ return def; }
+    }
 }
 

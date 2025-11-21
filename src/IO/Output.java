@@ -10,7 +10,7 @@ import src.Market.Market;
 import src.Battle;
 import src.Core.User;
 import src.Default.DefaultReader;
-
+import src.Core.Party;
 import java.util.Arrays;
 import java.util.List;
 
@@ -120,7 +120,7 @@ public class Output {
         someSpace();
 
     }
-    public static void gameInitialization() {
+    public static void gameInitializationMessage() {
         clearScreen();
         System.out.println("██╗     ███████╗ ██████╗ ███████╗███╗   ██╗██████╗ ███████╗                    ");
         System.out.println("██║     ██╔════╝██╔════╝ ██╔════╝████╗  ██║██╔══██╗██╔════╝██╗                 ");
@@ -174,7 +174,23 @@ public class Output {
         
     }
 
+    public static void printPartyInfo(Party party) {
+        System.out.println("=====================================================================================================================================================");
+        System.out.println("  ===      ==      ==  ==       == ======== ==      ==  ========    =========   =======    ==     ==                    ");
+        System.out.println("   =       == ==   ==   ==     ==  ==       == ==   ==     ==       ==     ==   ==    ==     ==  ==   ");
+        System.out.println("   =       ==  ==  ==    ==   ==   =======  ==  ==  ==     ==       ==     ==   ======         ==           ");
+        System.out.println("   =       ==   == ==     == ==    ==       ==   == ==     ==       ==     ==   ==   ==        ==    ");
+        System.out.println("  ===      ==      ==      ===     ======== ==      ==     ==       =========   ==     ==      ==                  ");
+        System.out.println("=====================================================================================================================================================");
+        List<Hero> heroes = party.getHeroes();
+        for (Hero h : heroes) {
+            Output.displayHeroFullInfo(h);
+        }
+        System.out.println("=================");
+    }
     public static void displayHeroFullInfo(Hero hero) {
+
+
         System.out.println("===== HERO: " + hero.getName() + " =====");
         System.out.println("Class: " + hero.getHeroClass());
         System.out.println("Level: " + hero.getLevel());
@@ -200,6 +216,57 @@ public class Output {
             }
         }
         System.out.println("=====================================");
+    }
+
+    public static void displayInstructions() {
+        System.out.println("\n╔════════════════════════════════════════════════════════════╗");
+        System.out.println("║          LEGENDS: MONSTERS AND HEROES - HELP               ║");
+        System.out.println("╚════════════════════════════════════════════════════════════╝");
+        System.out.println("\n=== OBJECTIVE ===");
+        System.out.println("Battle monsters, gain experience, level up, and survive!");
+        
+        System.out.println("\n=== WORLD CONTROLS ===");
+        System.out.println("  W/w - Move Up");
+        System.out.println("  A/a - Move Left");
+        System.out.println("  S/s - Move Down");
+        System.out.println("  D/d - Move Right");
+        System.out.println("  I/i - View party info & manage inventory");
+        System.out.println("  C/c - Character/inventory menu");
+        System.out.println("  M/m - Enter market (only on market tiles)");
+        System.out.println("  H/h - Display this help");
+        System.out.println("  Q/q - Quit game");
+        
+        System.out.println("\n=== TILE TYPES ===");
+        System.out.println("  P - Your party");
+        System.out.println("  M - Market (buy/sell items)");
+        System.out.println("  X - Inaccessible");
+        System.out.println("  (space) - Common (random battle chance)");
+        
+        System.out.println("\n=== BATTLE ACTIONS ===");
+        System.out.println("  A - Attack with equipped weapon");
+        System.out.println("  S - Cast spell (consumes MP and spell)");
+        System.out.println("  P - Use potion (HP/MP/stat boost)");
+        System.out.println("  E - Equip weapon or armor");
+        System.out.println("  I - View battle info");
+        
+        System.out.println("\n=== HERO CLASSES ===");
+        System.out.println("  Warrior  - Favors Strength & Agility");
+        System.out.println("  Sorcerer - Favors Dexterity & Agility");
+        System.out.println("  Paladin  - Favors Strength & Dexterity");
+        
+        System.out.println("\n=== LEVEL UP ===");
+        System.out.println("  - Requires EXP = current_level × 10");
+        System.out.println("  - All stats increase by 5%");
+        System.out.println("  - Favored stats increase by additional 5%");
+        System.out.println("  - HP resets to level × 100");
+        System.out.println("  - MP increases by 10%");
+        
+        System.out.println("\n=== TIPS ===");
+        System.out.println("  - Buy equipment at markets before battles");
+        System.out.println("  - Use spells for damage + debuffs on monsters");
+        System.out.println("  - Manage inventory (I/C) to equip items outside battle");
+        System.out.println("  - Heroes regenerate 10% HP/MP each battle round");
+        System.out.println("  - Fainted heroes revive with half HP/MP after victory");
     }
 
     // Battle-focused hero info (equipped items)
@@ -369,7 +436,7 @@ public class Output {
     public static void printMenu() {
         System.out.println("\nControls:");
         System.out.println("W/A/S/D - move");
-        System.out.println("I - show party info");
+        System.out.println("I/C - manage inventory (view info, equip/use items)");
         System.out.println("M - enter market (if on market tile)");
         System.out.println("Q - quit game");
         System.out.print("Your move: ");
