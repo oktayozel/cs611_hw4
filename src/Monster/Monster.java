@@ -1,5 +1,7 @@
 package src.Monster;
-public class Monster {
+
+// abstract class for monster
+public abstract class Monster {
     private String name;
     private int level;
     private int HP; // health points

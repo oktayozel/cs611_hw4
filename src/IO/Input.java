@@ -1,8 +1,7 @@
-package IO;
+package src.IO;
 import java.util.Scanner;
 
 import src.Core.GameManager;
-import src.Core.Piece;
 import src.Battle;
 import src.Core.User;
 import src.Market.Market;
@@ -10,6 +9,7 @@ import src.Hero.Hero;
 import src.Inventory.InventoryEntry;
 import src.Item.Item;
 import src.Default.DefaultReader;
+
 public  class Input {
     private static Scanner scanner = new Scanner(System.in);
 
@@ -69,6 +69,7 @@ public  class Input {
             !input.equals("I") &&
             !input.equals("C") &&
             !input.equals("M") &&
+            !input.equals("H") &&
             !input.equals("Q")) {
             
             System.out.println("Invalid input. Please try again.");

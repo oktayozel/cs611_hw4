@@ -74,16 +74,19 @@ public class Hero {
         return chance;
     }
 
+    // computes attack damage
     public int computeAttackDamage() {
         int weaponDamage = (equippedWeapon != null ? equippedWeapon.getDamage() : 0);
-        double raw = (strength + weaponDamage) * 0.05; // spec
+        double raw = (strength + weaponDamage) * 0.05; 
         return Math.max(1, (int)Math.round(raw));
     }
 
+    // damage reduces if armor is equipped.
     public int getArmorReduction() {
         return (equippedArmor != null ? equippedArmor.getDamageReduction() : 0);
     }
 
+    // apply damage to the hero
     public void takeDamage(int amount) {
         int dmg = Math.max(0, amount - getArmorReduction());
         HP -= dmg;
@@ -119,7 +122,7 @@ public class Hero {
         }
     }
 
-    
+
     public void reviveHalf() {
         if (isFainted()) {
             int baseHP = Math.max(1, level * 100);

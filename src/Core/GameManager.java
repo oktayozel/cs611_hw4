@@ -111,7 +111,8 @@ public class GameManager {
             tile.getMarket().start(user);
         } 
         else {
-            Output.narrative("You are not standing on a market tile.");
+            Output.print("You are not standing on a market tile.");
+            Output.sleep(2000);
         }
     }
 

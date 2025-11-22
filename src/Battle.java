@@ -3,9 +3,9 @@ package src;
 
 import java.util.List;
 import java.util.ArrayList;
-import IO.Input;
-import IO.Output;
-import Monster.MonsterSpawner;
+import src.IO.Input;
+import src.IO.Output;
+import src.Monster.MonsterSpawner;
 import src.Core.GameManager;
 import src.Core.Party;
 import src.Monster.Monster;
@@ -237,11 +237,11 @@ public class Battle {
         System.out.println("=== Battle Info ===");
         System.out.println("-- Heroes --");
         for (src.Hero.Hero h : gm.getUser().getParty().getHeroes()) {
-            IO.Output.displayHeroBattleInfo(h);
+            Output.displayHeroBattleInfo(h);
         }
         System.out.println("-- Monsters --");
         for (src.Monster.Monster m : monsters) {
-            IO.Output.displayMonsterStatistics(m);
+            Output.displayMonsterStatistics(m);
         }
     }
 

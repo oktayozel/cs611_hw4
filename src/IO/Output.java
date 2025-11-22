@@ -1,4 +1,4 @@
-package IO;
+package src.IO;
 
 import src.Monster.Monster;
 import src.Hero.Hero;
@@ -175,6 +175,7 @@ public class Output {
     }
 
     public static void printPartyInfo(Party party) {
+        clearScreen();
         System.out.println("=====================================================================================================================================================");
         System.out.println("  ===      ==      ==  ==       == ======== ==      ==  ========    =========   =======    ==     ==                    ");
         System.out.println("   =       == ==   ==   ==     ==  ==       == ==   ==     ==       ==     ==   ==    ==     ==  ==   ");
@@ -219,6 +220,7 @@ public class Output {
     }
 
     public static void displayInstructions() {
+        clearScreen();
         System.out.println("\n╔════════════════════════════════════════════════════════════╗");
         System.out.println("║          LEGENDS: MONSTERS AND HEROES - HELP               ║");
         System.out.println("╚════════════════════════════════════════════════════════════╝");
@@ -339,6 +341,7 @@ public class Output {
 
 
     public static void displaySecondWelcomeMessage(User user){
+        clearScreen();
         System.out.println("Welcome to Legends: Monsters and Heroes, " + user.getName() + "!");
         System.out.println("Prepare yourself for new adventures and challenges ahead!");
         sleep(500);
@@ -354,7 +357,7 @@ public class Output {
                 animateString(warriorArt);
             }
             
-            System.out.println("\n\n                             Hero " + (i + 1) + ": " + hero.getName());
+            System.out.println("\n\n              Hero " + (i + 1) + ": " + hero.getName());
             System.out.println("\n\n\n\n\n\n");
         }
         System.out.println("I beg mercy to you and the heroes, cause monsters won't show any!");
@@ -439,7 +442,8 @@ public class Output {
         System.out.println("I/C - manage inventory (view info, equip/use items)");
         System.out.println("M - enter market (if on market tile)");
         System.out.println("Q - quit game");
-        System.out.print("Your move: ");
+        System.out.println("H - Help/Information");
+        System.out.print("Your move > ");
         
     }
 
@@ -450,8 +454,7 @@ public class Output {
         System.out.println("S - Sell item");
         System.out.println("E - Exit market");
         System.out.println("Q - quit game");
-
-        System.out.print("Your choice: ");
+        System.out.print("Your choice >");
     }
 
 

@@ -9,10 +9,8 @@ import src.Default.DefaultReader;
 
 import java.util.*;
 
-/**
- * MarketItemTemplates now loads all item data from new_defaults directory
- * via DefaultReader instead of using hardcoded arrays.
- */
+
+// MarketItemTemplates loads all item data from new_defaults directory
 public class MarketItemTemplates {
 
     /** Get a random weapon from Weaponry.txt */

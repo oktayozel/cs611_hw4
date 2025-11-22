@@ -231,7 +231,13 @@ public class DefaultReader {
         return list;
     }
 
-    // -------- SPELLS --------
+
+
+
+
+    // -------- PARSE SPELLS --------
+
+    
     public static List<SpellTemplate> loadSpells(){
         List<SpellTemplate> all=new ArrayList<>();
         parseSpellFile("FireSpells.txt","Fire",all);
@@ -239,8 +245,13 @@ public class DefaultReader {
         parseSpellFile("LightningSpells.txt","Lightning",all);
         return all;
     }
+
+
+
+
+
     private static void parseSpellFile(String file, String type, List<SpellTemplate> out){
-        File f=new File(NEW_DEFAULTS_DIR,file);
+        File f=new File(DEFAULTS_DIR,file);
         if(!f.exists()) return;
         try(BufferedReader br=new BufferedReader(new FileReader(f))){
             String line; boolean headerSkipped=false;

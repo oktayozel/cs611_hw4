@@ -4,14 +4,13 @@ import src.Core.User;
 import src.Hero.Hero;
 import src.Item.Item;
 import src.Inventory.InventoryEntry;
-import src.Inventory.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import IO.Input;
-import IO.Output;
+import src.IO.Input;
+import src.IO.Output;
 
 
 public class Market {
