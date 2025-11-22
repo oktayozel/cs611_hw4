@@ -15,9 +15,12 @@ public class GameManager {
     private Board board;
     private Piece partyPiece;   
     private User user;
+    private src.Statistics statistics;
     
     // constructor 
-    public GameManager() {
+    public GameManager(src.Statistics statistics) {
+        this.statistics = statistics;
+        this.statistics.incrementGamesPlayed();
         setupGame();
     }
 
@@ -78,7 +81,8 @@ public class GameManager {
                 running = Input.getInput(this);
             }
         }
-        // game ended print thank you message
+        // game ended - display statistics and thank you message
+        statistics.displayStatistics();
         Output.print("Thanks for playing!");
     }
 
@@ -126,5 +130,8 @@ public class GameManager {
     }
     public Piece getPartyPiece() {
         return partyPiece;
+    }
+    public src.Statistics getStatistics() {
+        return statistics;
     }
 }

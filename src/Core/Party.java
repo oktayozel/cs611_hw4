@@ -48,6 +48,20 @@ public class Party {
         }
         return totalLevel / heroes.size();
     }
+    
+    // returns the highest level of the heroes in the party (for monster scaling)
+    public int getHighestLevel() {
+        if (heroes.isEmpty()) {
+            return 0;
+        }
+        int maxLevel = heroes.get(0).getLevel();
+        for (Hero h : heroes) {
+            if (h.getLevel() > maxLevel) {
+                maxLevel = h.getLevel();
+            }
+        }
+        return maxLevel;
+    }
 
 
 
@@ -70,11 +84,17 @@ public class Party {
             Hero hero;
             // create hero with stats from template
             if ("Warriors".equals(classPlural)) {
-                hero = new Warrior(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+                Warrior warrior = new Warrior(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+                warrior.equipDefaultWeapon();
+                hero = warrior;
             } else if ("Sorcerers".equals(classPlural)) {
-                hero = new Sorcerer(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+                Sorcerer sorcerer = new Sorcerer(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+                sorcerer.equipDefaultWeapon();
+                hero = sorcerer;
             } else {
-                hero = new Paladin(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+                Paladin paladin = new Paladin(chosen.name + " " + romanNumber, chosen.level, chosen.HP, chosen.MP, chosen.strength, chosen.dexterity, chosen.agility, chosen.gold, inv);
+                paladin.equipDefaultWeapon();
+                hero = paladin;
             }
             addHero(hero);
         }

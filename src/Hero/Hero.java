@@ -5,7 +5,10 @@ import src.Item.Weapon;
 import src.Item.Armor;
 import src.Item.Potion;
 
-public class Hero {
+public abstract class Hero {
+    
+    // Abstract methods to define favored attributes for each hero class
+    protected abstract void applyFavoredAttributeBoosts();
     private String name;
     private int level;
     private int HP; // health points
@@ -19,6 +22,7 @@ public class Hero {
     private Inventory inventory;
     private Weapon equippedWeapon;  // if the hero has equipped a weapon
     private Armor equippedArmor;   // if the hero has equipped an armor
+    private boolean usingTwoHands;  // whether using a one-handed weapon with both hands
 
 
     // general constructor
@@ -35,6 +39,7 @@ public class Hero {
         this.inventory = inventory;
         this.equippedWeapon = null;
         this.equippedArmor = null;
+        this.usingTwoHands = false;
     }
 
 
@@ -76,7 +81,24 @@ public class Hero {
 
     // computes attack damage
     public int computeAttackDamage() {
-        int weaponDamage = (equippedWeapon != null ? equippedWeapon.getDamage() : 0);
+        int weaponDamage = 0;
+        if (equippedWeapon != null) {
+            // Only deal damage if weapon isn't broken
+            if (!equippedWeapon.isBroken()) {
+                weaponDamage = equippedWeapon.getDamage();
+                // Boost damage by 50% if using one-handed weapon with both hands
+                if (equippedWeapon.getHands() == 1 && usingTwoHands) {
+                    weaponDamage = (int)Math.round(weaponDamage * 1.5);
+                }
+                // Consume durability after use
+                equippedWeapon.useDurability();
+                if (equippedWeapon.isBroken()) {
+                    System.out.println(name + "'s " + equippedWeapon.getName() + " has broken!");
+                }
+            } else {
+                System.out.println(name + "'s weapon is broken! No bonus damage.");
+            }
+        }
         double raw = (strength + weaponDamage) * 0.05; 
         return Math.max(1, (int)Math.round(raw));
     }
@@ -88,7 +110,16 @@ public class Hero {
 
     // apply damage to the hero
     public void takeDamage(int amount) {
-        int dmg = Math.max(0, amount - getArmorReduction());
+        int armorReduction = 0;
+        if (equippedArmor != null && !equippedArmor.isBroken()) {
+            armorReduction = equippedArmor.getDamageReduction();
+            // Consume durability when armor is used
+            equippedArmor.useDurability();
+            if (equippedArmor.isBroken()) {
+                System.out.println(name + "'s " + equippedArmor.getName() + " has broken!");
+            }
+        }
+        int dmg = Math.max(0, amount - armorReduction);
         HP -= dmg;
         if (HP < 0) HP = 0;
     }
@@ -112,6 +143,19 @@ public class Hero {
     // increase MP
     public void restoreMP(int amount) {
          if (amount > 0) MP += amount; 
+    }
+    
+    // Protected setters for favored attribute boosts in subclasses
+    protected void setStrength(int strength) {
+        this.strength = strength;
+    }
+    
+    protected void setDexterity(int dexterity) {
+        this.dexterity = dexterity;
+    }
+    
+    protected void setAgility(int agility) {
+        this.agility = agility;
     }
 
     // if not dead, increase 10% HP and MP after each round
@@ -147,7 +191,7 @@ public class Hero {
         }
     }
 
-    // level up logic for the hero
+    // level up logic for the hero - returns true if at least one level up occurred
     public boolean checkLevelUp() {
         boolean leveled = false;
         while (experience >= level * 10) {
@@ -161,17 +205,8 @@ public class Hero {
             dexterity = (int)Math.max(1, Math.round(dexterity * 1.05));
             agility = (int)Math.max(1, Math.round(agility * 1.05));
 
-            // some extra increases
-            if ("Warrior".equals(heroClass)) {
-                strength = (int)Math.max(1, Math.round(strength * 1.05));
-                agility  = (int)Math.max(1, Math.round(agility  * 1.05));
-            } else if ("Sorcerer".equals(heroClass)) {
-                dexterity = (int)Math.max(1, Math.round(dexterity * 1.05));
-                agility   = (int)Math.max(1, Math.round(agility   * 1.05));
-            } else if ("Paladin".equals(heroClass)) {
-                strength = (int)Math.max(1, Math.round(strength * 1.05));
-                dexterity = (int)Math.max(1, Math.round(dexterity * 1.05));
-            }
+            // Apply class-specific favored attribute boosts
+            applyFavoredAttributeBoosts();
         }
         if (leveled) {
             System.out.println(name + " leveled up! New level: " + level);
@@ -219,10 +254,35 @@ public class Hero {
         return equippedArmor; 
     }
     public void setEquippedWeapon(Weapon weapon) { 
-        this.equippedWeapon = weapon; 
+        this.equippedWeapon = weapon;
+        // Two-handed weapons must always use both hands
+        if (weapon != null && weapon.getHands() == 2) {
+            this.usingTwoHands = true;
+        } else {
+            // Default to one hand for one-handed weapons
+            this.usingTwoHands = false;
+        }
     }
+    
+    public void setEquippedWeapon(Weapon weapon, boolean useBothHands) {
+        this.equippedWeapon = weapon;
+        if (weapon == null) {
+            this.usingTwoHands = false;
+        } else if (weapon.getHands() == 2) {
+            // Two-handed weapons must always use both hands
+            this.usingTwoHands = true;
+        } else {
+            // One-handed weapon can be used with one or two hands
+            this.usingTwoHands = useBothHands;
+        }
+    }
+    
     public void setEquippedArmor(Armor armor) { 
         this.equippedArmor = armor; 
+    }
+    
+    public boolean isUsingTwoHands() {
+        return usingTwoHands;
     }
 
     // Get list of weapons from inventory
@@ -291,6 +351,8 @@ public class Hero {
         }
         return true;
     }
+
+    public abstract void equipDefaultWeapon();
 
     @Override
     public String toString() {

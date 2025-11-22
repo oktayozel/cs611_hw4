@@ -70,6 +70,49 @@ public class Market {
         Output.print("Sold: " + item.getName() + " for " + sellPrice + " gold.\n");
         return true;
     }
+    
+    // repair item
+    public boolean repairItem(Hero hero, Item item) {
+        if (hero == null || item == null) return false;
+        
+        // Check if item is a weapon or armor
+        if (!(item instanceof src.Item.Weapon) && !(item instanceof src.Item.Armor)) {
+            Output.print("Only weapons and armor can be repaired.\n");
+            return false;
+        }
+        
+        // Check if item is broken
+        if (item instanceof src.Item.Weapon) {
+            src.Item.Weapon weapon = (src.Item.Weapon) item;
+            if (!weapon.isBroken()) {
+                Output.print(item.getName() + " is not broken and doesn't need repair.\n");
+                return false;
+            }
+        } else if (item instanceof src.Item.Armor) {
+            src.Item.Armor armor = (src.Item.Armor) item;
+            if (!armor.isBroken()) {
+                Output.print(item.getName() + " is not broken and doesn't need repair.\n");
+                return false;
+            }
+        }
+        
+        // Calculate repair cost (half the original price)
+        int repairCost = item.getPrice() / 2;
+        if (!hero.spendGold(repairCost)) {
+            Output.print("Not enough gold to repair. Cost: " + repairCost + " gold.\n");
+            return false;
+        }
+        
+        // Repair the item
+        if (item instanceof src.Item.Weapon) {
+            ((src.Item.Weapon) item).repair();
+        } else if (item instanceof src.Item.Armor) {
+            ((src.Item.Armor) item).repair();
+        }
+        
+        Output.print("Repaired: " + item.getName() + " for " + repairCost + " gold.\n");
+        return true;
+    }
 
     // market loop
     public void start(User user) {

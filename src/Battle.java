@@ -27,14 +27,16 @@ public class Battle {
     private boolean heroesWon;
     private GameManager gm;
     private int round;
+    private Statistics statistics;
 
     public Battle(GameManager gm) {
         this.gm = gm;
+        this.statistics = gm.getStatistics();
         this.finished = false;
         this.heroesWon = false;
         this.round = 1;
         this.party = gm.getUser().getParty();
-        this.monsters = generateMonstersForBattle(party.size(),party.getAverageLevel());
+        this.monsters = generateMonstersForBattle(party.size(),party.getHighestLevel());
     }
 
     public void start() {
@@ -52,9 +54,11 @@ public class Battle {
         }
 
         gm.getUser().setInBattle(false);
-        System.out.println(heroesWon ? "Heroes won the battle!" : "All heroes have fallen... Game over.");
+        Output.narrative(heroesWon ? "Heroes won the battle!\n" : "All heroes have fallen... Game over.\n");
         Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
-        Input.inputNewGame();
+        if (!heroesWon) {
+            Input.inputNewGame(statistics);
+        }
         System.out.println("===== BATTLE ENDS =====");
     }
 
@@ -79,10 +83,10 @@ public class Battle {
 
 
     public void heroAttack(Hero attacker) {
-        if (attacker.isFainted()) { System.out.println(attacker.getName() + " cannot act (fainted)."); return; }
+        if (attacker.isFainted()) { Output.narrative(attacker.getName() + " cannot act (fainted).\n"); return; }
         List<Monster> aliveMonsters = new ArrayList<>();
         for (Monster m : monsters) if (!m.isDefeated()) aliveMonsters.add(m);
-        if (aliveMonsters.isEmpty()) { System.out.println("All monsters are already defeated."); return; }
+        if (aliveMonsters.isEmpty()) { Output.narrative("All monsters are already defeated.\n"); return; }
         System.out.println("Select target monster:");
         for (int i = 0; i < aliveMonsters.size(); i++) {
             Monster m = aliveMonsters.get(i);
@@ -92,16 +96,23 @@ public class Battle {
         int mIdx = Input.readInt(1, aliveMonsters.size()) - 1;
         Monster target = aliveMonsters.get(mIdx);
         // Dodge check
-        if (Math.random() < target.getDodge()) { System.out.println(target.getName() + " dodged the attack!"); return; }
+        if (Math.random() * 100 < target.getDodge()) { Output.narrative(target.getName() + " dodged the attack!\n"); return; }
         int rawDamage = attacker.computeAttackDamage();
         int finalDamage = Math.max(0, rawDamage - target.getDefense());
         target.takeDamage(finalDamage);
-        System.out.println(">" + attacker.getName() + " hits " + target.getName() + " for " + finalDamage + " damage.\n");
-        if (target.isDefeated()) System.out.println(target.getName() + " is defeated!");
+
+        Output.narrative(">" + attacker.getName() + " hits " + target.getName() + " for " + finalDamage + " damage.\n");
+
+        if (target.isDefeated()){ 
+            Output.narrative(target.getName() + " is defeated!\n");
+        }
     }
 
     public void castSpell(Hero caster) {
-        if (caster.isFainted()) { System.out.println(caster.getName() + " cannot act (fainted)."); return; }
+        if (caster.isFainted()) {
+             Output.narrative(caster.getName() + " cannot act (fainted).\n"); 
+             return;
+        }
         // Gather spells
         List<InventoryEntry> spellEntries = new ArrayList<>();
         for (InventoryEntry entry : caster.getInventory().getEntries()) if (entry.getItem() instanceof Spell) spellEntries.add(entry);
@@ -126,7 +137,7 @@ public class Battle {
         List<Monster> aliveMonsters = new ArrayList<>();
         for (Monster m : monsters) if (!m.isDefeated()) aliveMonsters.add(m);
         if (aliveMonsters.isEmpty()) {
-            System.out.println("All monsters are defeated.");
+            Output.narrative("All monsters are defeated.\n");
             return;
         }
         System.out.println("Select target monster:");
@@ -137,29 +148,29 @@ public class Battle {
         int mIdx = Input.readInt(1, aliveMonsters.size()) - 1;
         Monster target = aliveMonsters.get(mIdx);
 
-        if (Math.random() < target.getDodge()) {
-            System.out.println(target.getName() + " dodged the spell!");
+        if (Math.random() * 100 < target.getDodge()) {
+            Output.narrative(target.getName() + " dodged the spell!\n");
             return;
         }
 
         int rawDamage = spell.getDamage() + (int)Math.round(caster.getDexterity() * 0.05);
         int finalDamage = Math.max(0, rawDamage - target.getDefense());
         target.takeDamage(finalDamage);
-        System.out.println(caster.getName() + " casts " + spell.getName() + " on " + target.getName() + " for " + finalDamage + " damage.");
+        Output.narrative(caster.getName() + " casts " + spell.getName() + " on " + target.getName() + " for " + finalDamage + " damage.\n");
 
         String type = spell.getSpellType().toUpperCase();
         switch (type) {
             case "FIRE":
                 target.reduceDefenseBy10Percent();
-                System.out.println(target.getName() + "'s defense reduced!");
+                Output.narrative(target.getName() + "'s defense reduced!\n");
                 break;
             case "ICE":
                 target.reduceBaseDamageBy10Percent();
-                System.out.println(target.getName() + "'s damage reduced!");
+                Output.narrative(target.getName() + "'s damage reduced!\n");
                 break;
             case "LIGHTNING":
                 target.reduceDodgeBy10Percent();
-                System.out.println(target.getName() + "'s dodge reduced!");
+                Output.narrative(target.getName() + "'s dodge reduced!\n");
                 break;
             default:
                 // no special effect
@@ -169,11 +180,11 @@ public class Battle {
         // consume one spell (assuming single-use scroll style)
         spellEntry.decreaseQuantity(1);
         if (spellEntry.getQuantity() <= 0) caster.getInventory().removeItemByName(spell.getName());
-        if (target.isDefeated()) System.out.println(target.getName() + " is defeated!");
+        if (target.isDefeated()) Output.narrative(target.getName() + " is defeated!\n");
     }
 
     public void usePotion(Hero user) {
-        if (user.isFainted()) { System.out.println(user.getName() + " cannot act (fainted)."); return; }
+        if (user.isFainted()) { Output.narrative(user.getName() + " cannot act (fainted).\n"); return; }
         List<InventoryEntry> potionEntries = new ArrayList<>();
         for (InventoryEntry entry : user.getInventory().getEntries()) if (entry.getItem() instanceof Potion) potionEntries.add(entry);
         if (potionEntries.isEmpty()) {
@@ -191,11 +202,11 @@ public class Battle {
         user.applyPotion(potion);
         pEntry.decreaseQuantity(1);
         if (pEntry.getQuantity() <= 0) user.getInventory().removeItemByName(potion.getName());
-        System.out.println(user.getName() + " uses " + potion.getName() + ".");
+        Output.narrative(user.getName() + " uses " + potion.getName() + ".\n");
     }
 
     public void changeEquipment(Hero hero) {
-        if (hero.isFainted()) { System.out.println(hero.getName() + " cannot act (fainted)."); return; }
+        if (hero.isFainted()) { Output.narrative(hero.getName() + " cannot act (fainted).\n"); return; }
         List<InventoryEntry> weaponEntries = new ArrayList<>();
         List<InventoryEntry> armorEntries = new ArrayList<>();
         for (InventoryEntry entry : hero.getInventory().getEntries()) {
@@ -213,12 +224,24 @@ public class Battle {
             System.out.println("Select weapon:");
             for (int i = 0; i < weaponEntries.size(); i++) {
                 Weapon w = (Weapon) weaponEntries.get(i).getItem();
-                System.out.println("(" + (i+1) + ") " + w.getName() + " DMG:" + w.getDamage());
+                System.out.println("(" + (i+1) + ") " + w.getName() + " DMG:" + w.getDamage() + " Hands:" + w.getHands());
             }
             int wIdx = Input.readInt(1, weaponEntries.size()) - 1;
             Weapon w = (Weapon) weaponEntries.get(wIdx).getItem();
-            hero.setEquippedWeapon(w);
-            System.out.println(hero.getName() + " equipped weapon " + w.getName());
+            
+            // Ask if using two hands for one-handed weapons
+            if (w.getHands() == 1) {
+                System.out.println("Use (1) One hand or (2) Two hands? (Two hands gives 50% damage boost)");
+                int handChoice = Input.readInt(1, 2);
+                boolean useTwoHands = (handChoice == 2);
+                hero.setEquippedWeapon(w, useTwoHands);
+                String handMsg = useTwoHands ? " with both hands (boosted!)" : " with one hand";
+                Output.narrative(hero.getName() + " equipped weapon " + w.getName() + handMsg + "\n");
+            } else {
+                // Two-handed weapon must use both hands
+                hero.setEquippedWeapon(w);
+                Output.narrative(hero.getName() + " equipped weapon " + w.getName() + " (requires both hands)\n");
+            }
         } else {
             if (armorEntries.isEmpty()) { System.out.println("No armor available."); return; }
             System.out.println("Select armor:");
@@ -229,7 +252,7 @@ public class Battle {
             int aIdx = Input.readInt(1, armorEntries.size()) - 1;
             Armor a = (Armor) armorEntries.get(aIdx).getItem();
             hero.setEquippedArmor(a);
-            System.out.println(hero.getName() + " equipped armor " + a.getName());
+            Output.narrative(hero.getName() + " equipped armor " + a.getName() + "\n");
         }
     }
 
@@ -256,14 +279,14 @@ public class Battle {
             Hero target = aliveHeroes.get((int)(Math.random() * aliveHeroes.size()));
             // hero dodge check
             if (Math.random() < target.getDodgeChance()) {
-                System.out.println(target.getName() + " dodged " + m.getName() + "'s attack!");
+                Output.narrative(target.getName() + " dodged " + m.getName() + "'s attack!");
                 continue;
             }
             int rawDamage = m.getBaseDamage();
             target.takeDamage(rawDamage);
-            System.out.println(m.getName() + " hits " + target.getName() + " for " + Math.max(0, rawDamage - target.getArmorReduction()) + " damage.");
+            Output.narrative(m.getName() + " hits " + target.getName() + " for " + Math.max(0, rawDamage - target.getArmorReduction()) + " damage.");
             if (target.isFainted()) {
-                System.out.println(target.getName() + " has fainted!");
+                Output.narrative(target.getName() + " has fainted!");
                 // Award EXP to monster for defeating a hero
                 // remove fainted hero from alive list to prevent further targeting this turn
                 aliveHeroes.remove(target);
@@ -306,15 +329,23 @@ public class Battle {
             totalGold += m.getLevel() * 100; 
             totalExp  += m.getLevel();    
         }
+        
+        // Track statistics
+        statistics.incrementBattlesWon();
+        statistics.incrementMonstersDefeated(monsters.size());
+        
         for (Hero h : party.getHeroes()) {
             if (h.isFainted()) {
                 h.reviveHalf();
-                System.out.println(h.getName() + " is revived with half HP/MP (no rewards). ");
+                Output.narrative(h.getName() + " is revived with half HP/MP (no rewards).\n");
                 continue; // no gold/exp for fainted heroes
             }
             h.addGold(totalGold);
             h.addExperience(totalExp);
-            h.checkLevelUp();
+            boolean leveledUp = h.checkLevelUp();
+            if (leveledUp) {
+                statistics.incrementHeroesLevelledUp();
+            }
         }
         System.out.println("Rewards distributed: +" + totalGold + " gold, +" + totalExp + " EXP (per surviving hero).");
     }

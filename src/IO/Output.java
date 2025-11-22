@@ -176,18 +176,17 @@ public class Output {
 
     public static void printPartyInfo(Party party) {
         clearScreen();
-        System.out.println("=====================================================================================================================================================");
-        System.out.println("  ===      ==      ==  ==       == ======== ==      ==  ========    =========   =======    ==     ==                    ");
-        System.out.println("   =       == ==   ==   ==     ==  ==       == ==   ==     ==       ==     ==   ==    ==     ==  ==   ");
-        System.out.println("   =       ==  ==  ==    ==   ==   =======  ==  ==  ==     ==       ==     ==   ======         ==           ");
-        System.out.println("   =       ==   == ==     == ==    ==       ==   == ==     ==       ==     ==   ==   ==        ==    ");
-        System.out.println("  ===      ==      ==      ===     ======== ==      ==     ==       =========   ==     ==      ==                  ");
-        System.out.println("=====================================================================================================================================================");
+        System.out.println("===============================================================================================");
+        System.out.println("                         ===      ==      ==  ========  =========             ");
+        System.out.println("                          =       == ==   ==  ==        ==     ==   ");
+        System.out.println("                          =       ==  ==  ==  ======    ==     ==         ");
+        System.out.println("                          =       ==   == ==  ==        ==     ==  ");
+        System.out.println("                         ===      ==      ==  ==        =========                ");
+        System.out.println("===============================================================================================");
         List<Hero> heroes = party.getHeroes();
         for (Hero h : heroes) {
             Output.displayHeroFullInfo(h);
         }
-        System.out.println("=================");
     }
     public static void displayHeroFullInfo(Hero hero) {
 
@@ -205,7 +204,12 @@ public class Output {
 
         Weapon w = hero.getEquippedWeapon();
         Armor a = hero.getEquippedArmor();
-        System.out.println("Equipped Weapon: " + (w != null ? w.getName() + " (DMG:" + w.getDamage() + ")" : "None"));
+        if (w != null) {
+            String handInfo = w.getHands() == 2 ? " (2H)" : (hero.isUsingTwoHands() ? " (1H, using 2H)" : " (1H)");
+            System.out.println("Equipped Weapon: " + w.getName() + handInfo + " (DMG:" + w.getDamage() + ")");
+        } else {
+            System.out.println("Equipped Weapon: None");
+        }
         System.out.println("Equipped Armor:  " + (a != null ? a.getName() + " (DR:" + a.getDamageReduction() + ")" : "None"));
 
         System.out.println("Inventory:");
@@ -279,7 +283,12 @@ public class Output {
         System.out.println("MP: " + hero.getMP());
         Weapon w = hero.getEquippedWeapon();
         Armor a = hero.getEquippedArmor();
-        System.out.println("Equipped Weapon: " + (w != null ? w.getName() + " (DMG:" + w.getDamage() + ")" : "None"));
+        if (w != null) {
+            String handInfo = w.getHands() == 2 ? " (2H)" : (hero.isUsingTwoHands() ? " (1H, using 2H)" : " (1H)");
+            System.out.println("Equipped Weapon: " + w.getName() + handInfo + " (DMG:" + w.getDamage() + ")");
+        } else {
+            System.out.println("Equipped Weapon: None");
+        }
         System.out.println("Equipped Armor: " + (a != null ? a.getName() + " (DR:" + a.getDamageReduction() + ")" : "None"));
         System.out.println("=====================================");
     }
@@ -334,7 +343,7 @@ public class Output {
         for( int i = 0 ; i < battle.getParty().getHeroes().size(); i++){
             Hero hero = battle.getParty().getHeroes().get(i);
             Monster monster = battle.getMonsters().get(i);
-            System.out.printf("%-50s X %-200s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
+            System.out.printf("%-50s                              X                                           %-200s%n", hero.getName() + " (HP: " + hero.getHP() + ", MP: " + hero.getMP() + ")", monster.getName() + " (HP: " + monster.getHP() + ")");
         }
 
     }
@@ -378,28 +387,28 @@ public class Output {
 
     public static void printRandomNoBattleMessage(int number){
 
-        if(number ==3 ){
+        if(number < 10  && number > 0 ){
             narrative("You sneak past the monsters without being noticed. Lucky you!");
         }
-        if(number ==4 ){
+        else if(number <20 && number >=10 ){
             narrative("The monsters are too busy fighting among themselves to notice you. You slip by unnoticed.");
         }
-        if(number ==5 ){
+        else if(number <30 && number >=20 ){
             narrative("A sudden fog envelops the area, allowing you to move unseen past the monsters.");
         }
-        if(number ==6 ){    
+        else if(number <40 && number >=30 ){    
             narrative("No monsters in sight! You continue your journey unchallenged.");
         }
-        if(number ==7 ){    
+        if(number <50 && number >=40 ){    
             narrative("No monsters here! Cowards");
         }
-        if(number == 8 ){    
+        else if(number <60 && number >=50 ){    
             narrative("The monsters seem to have retreated for now. You proceed with caution.");
         }
-        if(number == 9){
+        else if(number <70 && number >=60 ){
             narrative("You will keep chasing them until no monster is left!");
         }
-        if(number == 10){
+        else{
             narrative("Looks like you are very good at your job, no monsters here!");
         }
 
@@ -452,6 +461,7 @@ public class Output {
         System.out.println("I - Show Hero Info");
         System.out.println("B - Buy item");
         System.out.println("S - Sell item");
+        System.out.println("R - Repair broken equipment");
         System.out.println("E - Exit market");
         System.out.println("Q - quit game");
         System.out.print("Your choice >");

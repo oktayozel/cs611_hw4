@@ -126,8 +126,8 @@ public  class Input {
 
     public static boolean getMarketInput(Market market, User user) {
         String input = scanner.nextLine().trim().toUpperCase();
-        if (!input.equals("B") && !input.equals("S") && !input.equals("I") && !input.equals("E") && !input.equals("Q")) {
-            System.out.println("Invalid input. Try B (buy), S (sell), I (info), E (exit), Q (quit).");
+        if (!input.equals("B") && !input.equals("S") && !input.equals("I") && !input.equals("R") && !input.equals("E") && !input.equals("Q")) {
+            System.out.println("Invalid input. Try B (buy), S (sell), R (repair), I (info), E (exit), Q (quit).");
             return true; 
         }
         isGameExit(input); 
@@ -138,6 +138,9 @@ public  class Input {
                 return true;
             case "S":
                 handleSell(market, user);
+                return true;
+            case "R":
+                handleRepair(market, user);
                 return true;
             case "I":
                 // In market, just show info without full inventory menu
@@ -395,6 +398,61 @@ public  class Input {
         }
         Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
     }
+    
+    private static void handleRepair(Market market, User user) {
+        if (user.getParty().getHeroes().isEmpty()) {
+            System.out.println("No heroes in party to repair items.");
+            return;
+        }
+        System.out.println("Select hero to repair items for:");
+        for (int i = 0; i < user.getParty().getHeroes().size(); i++) {
+            Hero h = user.getParty().getHeroes().get(i);
+            System.out.println("(" + (i + 1) + ") " + h.getName() + " [Gold: " + h.getGold() + "]");
+        }
+        System.out.print("Hero number: ");
+        int heroIdx = readInt(1, user.getParty().getHeroes().size());
+        Hero hero = user.getParty().getHeroes().get(heroIdx - 1);
+        
+        // Find broken items
+        java.util.List<Item> brokenItems = new java.util.ArrayList<>();
+        for (InventoryEntry entry : hero.getInventory().getEntries()) {
+            Item item = entry.getItem();
+            if (item instanceof src.Item.Weapon) {
+                src.Item.Weapon weapon = (src.Item.Weapon) item;
+                if (weapon.isBroken()) {
+                    brokenItems.add(item);
+                }
+            } else if (item instanceof src.Item.Armor) {
+                src.Item.Armor armor = (src.Item.Armor) item;
+                if (armor.isBroken()) {
+                    brokenItems.add(item);
+                }
+            }
+        }
+        
+        if (brokenItems.isEmpty()) {
+            System.out.println("No broken items to repair.");
+            Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+            return;
+        }
+        
+        System.out.println("Select broken item to repair:");
+        for (int i = 0; i < brokenItems.size(); i++) {
+            Item item = brokenItems.get(i);
+            int repairCost = item.getPrice() / 2;
+            System.out.println("(" + (i + 1) + ") " + item.getName() + " (Repair cost: " + repairCost + " gold)");
+        }
+        System.out.print("Item number: ");
+        int itemIdx = readInt(1, brokenItems.size());
+        Item itemToRepair = brokenItems.get(itemIdx - 1);
+
+        if (market.repairItem(hero, itemToRepair)) {
+            System.out.println("Repair successful.");
+        } else {
+            System.out.println("Repair failed.");
+        }
+        Output.sleep(DefaultReader.getDefaultSettings("sleep_ms_after_action"));
+    }
 
     public static int readInt(int min, int max) {
         while (true) {
@@ -452,11 +510,11 @@ public  class Input {
     public static void waitForEnter() {
         System.out.print("\nPress Enter to continue...");
         try {
-            String dummy = scanner.nextLine();
+            scanner.nextLine();
         } catch (Exception ignored) {}
     }
 
-    public static void inputNewGame() {
+    public static void inputNewGame(src.Statistics statistics) {
         System.out.print("Do you want to start a new game? (Y/N), to exit press Q: ");
         while (true) {
             String raw = scanner.nextLine().trim().toUpperCase();
@@ -464,10 +522,11 @@ public  class Input {
             if (raw.equals("Y")) {
                 System.out.println("Starting a new game...");
                 Output.sleep(2000);
-                GameManager gm = new GameManager();
+                GameManager gm = new GameManager(statistics);
                 gm.start();
                 break;
             } else if (raw.equals("N")) {
+                statistics.displayStatistics();
                 System.out.println("Exiting the game...");
                 System.exit(0);
             } else {
